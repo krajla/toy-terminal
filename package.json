@@ -1,0 +1,21 @@
+{
+  "name": "krajla-space",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run scripts/dev.ts",
+    "build": "bun run scripts/build.ts",
+    "dither": "bun run scripts/dither.ts",
+    "typecheck": "tsc --noEmit",
+    "icons": "bun run scripts/icons.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.5",
+    "sharp": "^0.35.5",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "0.1",
+    "ascii.rest": "0.4.0"
+  }
+}

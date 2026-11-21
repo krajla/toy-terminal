@@ -111,3 +111,11 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Original photos and videos: commit processed outputs only
+images/
+
+# Solver scripts stay local
+solvers/
+
+.DS_Store
