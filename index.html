@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0e14" />
+    <title>krajla.space</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <main id="screen">
+      <div id="out" aria-live="polite"></div>
+      <label class="line" id="line">
+        <span class="prompt" id="prompt"></span>
+        <input id="in" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-label="terminal input" />
+      </label>
+    </main>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
