@@ -1,0 +1,14 @@
+Welcome to krajla.space.
+
+I am Robert. This is my terminal. The grey one on the boot screen is Luna,
+and she runs the place.
+
+Luna hides sardines in this machine. Each one looks like sardine{...}.
+When you find one, type:   submit <sardine>
+To count what you have:    sardines
+
+Here is a free one, because she is in a good mood today:
+
+    sardine{w3lc0m3_t0_th3_b0x}
+
+Luna likes to hide things where a plain ls does not look.

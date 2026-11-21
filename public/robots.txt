@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /luna-tax-returns/
+
+# Luna asks the robots to respect her privacy. Humans are on their own.
