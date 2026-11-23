@@ -11,28 +11,34 @@ export function browserStorage(): KeyValueStore | undefined {
 }
 
 // Storage can be missing or throw (private mode, blocked cookies). Progress then lasts for the page only.
+// Each found sardine maps to its proof, the SHA-256 of the flag. The finale needs the proofs, not the flags.
 export class Progress {
-  private readonly found: Set<string>;
+  private readonly found: Map<string, string>;
 
   constructor(private readonly store: KeyValueStore | undefined = browserStorage()) {
-    this.found = new Set(this.load());
+    this.found = new Map(this.load());
   }
 
   has(id: string): boolean {
     return this.found.has(id);
   }
 
-  add(id: string): void {
-    this.found.add(id);
+  proof(id: string): string | undefined {
+    return this.found.get(id);
+  }
+
+  add(id: string, proof: string): void {
+    this.found.set(id, proof);
     try {
-      this.store?.setItem(KEY, JSON.stringify([...this.found]));
+      this.store?.setItem(KEY, JSON.stringify(Object.fromEntries(this.found)));
     } catch {}
   }
 
-  private load(): string[] {
+  private load(): [string, string][] {
     try {
-      const parsed: unknown = JSON.parse(this.store?.getItem(KEY) ?? "[]");
-      return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === "string") : [];
+      const parsed: unknown = JSON.parse(this.store?.getItem(KEY) ?? "{}");
+      if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return [];
+      return Object.entries(parsed).filter((e): e is [string, string] => typeof e[1] === "string");
     } catch {
       return [];
     }

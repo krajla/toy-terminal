@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { SARDINES, sha256Hex } from "../../ctf/sardines.ts";
+import { findSardine } from "../../ctf/sardines.ts";
 import { ROOT } from "../../fs/tree.ts";
 import { ALL_COMMANDS } from "../../shell/commands.ts";
 import { fakeTerm, makeShell } from "../../test-helpers.ts";
@@ -67,7 +67,7 @@ test("the injection path: OR 1=1, then sqlite_master, then the stash, which hold
   expect(text).toContain("cucumber");
   expect(text).toContain("CREATE TABLE stash (id INTEGER PRIMARY KEY, owner TEXT, contents TEXT)");
   const flag = text.match(/sardine\{[a-z0-9_]+\}/)?.[0] ?? "";
-  expect(await sha256Hex(flag)).toBe(SARDINES.find((s) => s.id === "sqlite")?.sha256 ?? "missing");
+  expect((await findSardine(flag))?.id).toBe("sqlite");
 });
 
 test("the catalog answers to both SQLite names, and other engines' catalogs do not exist", async () => {

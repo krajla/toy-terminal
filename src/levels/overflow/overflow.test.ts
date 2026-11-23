@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { SARDINES, sha256Hex } from "../../ctf/sardines.ts";
+import { findSardine } from "../../ctf/sardines.ts";
 import { lookup, type FsNode } from "../../fs/fs.ts";
 import { ROOT } from "../../fs/tree.ts";
 import { ALL_COMMANDS } from "../../shell/commands.ts";
@@ -43,7 +43,7 @@ test("an overflow name points the pointer at dispense_sardine and dispenses the 
   await daemon.run(`HELLO ${nameFor(ADDRESS_SARDINE)}`, term);
   await daemon.run("DISPENSE", term);
   const flag = lines.map((l) => l.text).join("\n").match(/sardine\{[a-z0-9_]+\}/)?.[0] ?? "";
-  expect(await sha256Hex(flag)).toBe(SARDINES.find((s) => s.id === "overflow")?.sha256 ?? "missing");
+  expect((await findSardine(flag))?.id).toBe("overflow");
 });
 
 test("a wrong address crashes the daemon and writes the crash dump", async () => {

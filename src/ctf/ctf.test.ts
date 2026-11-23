@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { CTF_COMMANDS } from "../shell/ctf-commands.ts";
 import { fakeTerm, makeShell, memoryStore } from "../test-helpers.ts";
 import { Progress } from "./progress.ts";
-import { SARDINES, sha256Hex } from "./sardines.ts";
+import { findSardine, proofOf, sardineForProof, SARDINES, sha256Hex } from "./sardines.ts";
 
 const ROOT = join(import.meta.dir, "..", "..");
 const FLAG = /sardine\{[a-z0-9_]+\}/g;
@@ -16,18 +16,25 @@ const EASY_SOURCES: Record<string, string> = {
   header: "public/_headers",
 };
 
-test("each easy sardine sits in its level file and matches its registry hash", async () => {
+test("each easy sardine sits in its level file and matches its registry check", async () => {
   for (const [id, path] of Object.entries(EASY_SOURCES)) {
     const flags = (await Bun.file(join(ROOT, path)).text()).match(FLAG) ?? [];
     expect(flags).toHaveLength(1);
-    const sardine = SARDINES.find((s) => s.id === id);
-    expect(await sha256Hex(flags[0] ?? "")).toBe(sardine?.sha256 ?? "missing");
+    expect((await findSardine(flags[0] ?? ""))?.id).toBe(id);
   }
+});
+
+test("the registry checks the proof of a flag, not the flag itself", async () => {
+  const proof = await proofOf("sardine{w3lc0m3_t0_th3_b0x}");
+  expect((await sardineForProof(proof))?.id).toBe("welcome");
+  expect(SARDINES.some((s) => s.check === proof)).toBe(false);
+  // A plain SHA-256 of a flag, as older commits of the registry hold, is not a proof.
+  expect(proof).not.toBe(await sha256Hex("sardine{w3lc0m3_t0_th3_b0x}"));
 });
 
 test("registry ids and hashes are unique", () => {
   expect(new Set(SARDINES.map((s) => s.id)).size).toBe(SARDINES.length);
-  expect(new Set(SARDINES.map((s) => s.sha256)).size).toBe(SARDINES.length);
+  expect(new Set(SARDINES.map((s) => s.check)).size).toBe(SARDINES.length);
 });
 
 test("submit accepts a sardine once and rejects anything else", async () => {
@@ -48,15 +55,15 @@ test("submit accepts a sardine once and rejects anything else", async () => {
 test("sardines names only the found ones", async () => {
   const { term, lines } = fakeTerm();
   const shell = makeShell(CTF_COMMANDS);
-  shell.progress.add("dotfile");
+  shell.progress.add("dotfile", "proof");
   await shell.run("sardines", term);
   expect(lines[1]?.text).toBe(`  easy   1/${SARDINES.filter((s) => s.tier === "easy").length}  the dotfile`);
 });
 
 test("progress survives a reload and ignores broken or failing storage", () => {
   const store = memoryStore();
-  new Progress(store).add("welcome");
-  expect(new Progress(store).has("welcome")).toBe(true);
+  new Progress(store).add("welcome", "proof");
+  expect(new Progress(store).proof("welcome")).toBe("proof");
 
   store.setItem("krajla.sardines", "{not json");
   expect(new Progress(store).has("welcome")).toBe(false);
@@ -73,7 +80,7 @@ test("progress survives a reload and ignores broken or failing storage", () => {
     },
   };
   const progress = new Progress(throwing);
-  progress.add("welcome");
+  progress.add("welcome", "proof");
   expect(progress.has("welcome")).toBe(true);
 });
 
@@ -87,6 +94,5 @@ test("only the easy flags appear in plain text in src/ and public/", async () =>
   }
   const headers = (await Bun.file(join(ROOT, "public/_headers")).text()).match(FLAG) ?? [];
   for (const flag of headers) plain.add(flag);
-  const easy = new Set(SARDINES.filter((s) => s.tier === "easy").map((s) => s.sha256));
-  for (const flag of plain) expect([flag, easy.has(await sha256Hex(flag))]).toEqual([flag, true]);
+  for (const flag of plain) expect([flag, (await findSardine(flag))?.tier]).toEqual([flag, "easy"]);
 });

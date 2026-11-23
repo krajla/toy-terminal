@@ -386,7 +386,10 @@ img.dither {
   .leader-inner,
   .px-eye,
   .px-eye-low,
-  .px-pupil {
+  .px-pupil,
+  .finale-fish,
+  .chomp,
+  .chomp.big {
     animation: none;
   }
 
@@ -491,4 +494,65 @@ img.dither {
     border-right: 0;
     border-bottom: 1px solid var(--amber);
   }
+}
+
+/* The finale: each sardine swims from an edge into Luna. Container units keep the paths inside the frame. */
+.finale {
+  position: relative;
+  width: min(100%, 520px);
+  margin: 6px 0;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+/* The photo is smaller than the other photos, so the scene and the message fit on one screen. */
+.finale img.dither {
+  width: 60%;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* The fish swim to Luna's mouth in the boss photo. A dark halo keeps them visible on the light photo. */
+.finale-fish {
+  position: absolute;
+  top: 33%;
+  left: 46%;
+  font-size: 1.3em;
+  font-weight: bold;
+  white-space: pre;
+  text-shadow: 0 0 3px #000, 0 0 6px #000;
+  opacity: 0;
+  animation: swim var(--swim, 1.6s) cubic-bezier(0.45, 0, 0.75, 0.6) var(--delay) both;
+}
+
+.finale-fish.big {
+  font-size: 2em;
+}
+
+.finale-fish.small {
+  font-size: 0.9em;
+}
+
+@keyframes swim {
+  0% { opacity: 0; transform: translate(var(--fx), var(--fy)); }
+  10%, 85% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+}
+
+.chomp {
+  animation: chomp 0.5s ease-in-out 2;
+}
+
+.chomp.big {
+  animation: chomp-big 0.6s ease-in-out 4;
+}
+
+@keyframes chomp-big {
+  30% { transform: scale(1.07) rotate(-2deg); }
+  60% { transform: scale(0.95) rotate(2deg); }
+}
+
+@keyframes chomp {
+  30% { transform: scale(1.03) rotate(-1deg); }
+  60% { transform: scale(0.98) rotate(1deg); }
 }

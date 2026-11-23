@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { SARDINES, sha256Hex } from "../../ctf/sardines.ts";
+import { findSardine } from "../../ctf/sardines.ts";
 import { lookup } from "../../fs/fs.ts";
 import { ROOT } from "../../fs/tree.ts";
 import { ALL_COMMANDS } from "../../shell/commands.ts";
@@ -25,7 +25,7 @@ test("the solve: the leaked codename deciphers Appendix C to the sardine", async
   expect(leaked).toHaveLength(1);
   const appendix = node.content.slice(node.content.indexOf("protocol 7.")).split("\n").slice(2).join("\n");
   const flag = decipher(appendix, leaked[0] ?? "").match(/sardine\{[a-z0-9_]+\}/)?.[0] ?? "";
-  expect(await sha256Hex(flag)).toBe(SARDINES.find((s) => s.id === "case-file")?.sha256 ?? "missing");
+  expect((await findSardine(flag))?.id).toBe("case-file");
 });
 
 test("the cipher is only named in the hidden protocols file next to the case file", () => {
