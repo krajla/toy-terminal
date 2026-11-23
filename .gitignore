@@ -119,3 +119,6 @@ images/
 solvers/
 
 .DS_Store
+
+# Build output of the Cloudflare CLI
+.cloudflare/

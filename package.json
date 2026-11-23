@@ -8,10 +8,12 @@
     "dither": "bun run scripts/dither.ts",
     "typecheck": "tsc --noEmit",
     "icons": "bun run scripts/icons.ts",
-    "lint": "oxlint --type-aware --deny-warnings"
+    "lint": "oxlint --type-aware --deny-warnings",
+    "deploy": "bun run build && cf deploy dist"
   },
   "devDependencies": {
     "@types/bun": "^1.4.5",
+    "cf": "^1.0.0-rc.4",
     "oxlint": "1.85.0",
     "oxlint-tsgolint": "^7.0.2008",
     "sharp": "^0.35.5",
