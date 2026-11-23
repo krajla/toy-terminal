@@ -2,7 +2,8 @@ import type { LunaPhoto } from "../luna.ts";
 
 export type FsNode =
   | { kind: "dir"; children: Record<string, FsNode> }
-  | { kind: "file"; content: string }
+  /** `mtime` is the time that `ls -l` shows, for example "Nov 14 09:00". */
+  | { kind: "file"; content: string; mtime?: string }
   | { kind: "image"; photo: LunaPhoto; size: number };
 
 export const HOME = "/home/guest";

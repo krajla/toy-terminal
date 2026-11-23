@@ -24,6 +24,7 @@ export const SARDINES: Sardine[] = [
   { id: "git-history", name: "the leaked key", tier: "hard", sha256: "2115da2f24f39c5b76576ed31eadf6d87e3f046c6e0b1b3495b8a6ec6dfa53d6" },
   // The flag is sealed with the address of dispense_sardine as the phrase.
   { id: "overflow", name: "the overflow", tier: "hard", sha256: "170b0862495bb35b8795595ab372be15510f23d5f5ae7570f0df0b0b2bd058af" },
+  { id: "zoomies", name: "the zoomies log", tier: "hard", sha256: "b58816263eae51b668badaf7ccfbc8a613d0b67083ad113513114965fafbb592" },
 ];
 
 export async function sha256Hex(text: string): Promise<string> {

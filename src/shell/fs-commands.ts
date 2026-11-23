@@ -15,7 +15,8 @@ function size(node: FsNode): number {
 
 function longLine(name: string, node: FsNode, width: number): Part[] {
   const isDir = node.kind === "dir";
-  const meta = `${isDir ? "drwxr-xr-x" : "-rw-r--r--"} 1 guest guest ${String(size(node)).padStart(width)} ${MTIME} `;
+  const mtime = node.kind === "file" ? (node.mtime ?? MTIME) : MTIME;
+  const meta = `${isDir ? "drwxr-xr-x" : "-rw-r--r--"} 1 guest guest ${String(size(node)).padStart(width)} ${mtime} `;
   return [{ text: meta }, isDir ? { text: `${name}/`, cls: "blue" } : { text: name }];
 }
 

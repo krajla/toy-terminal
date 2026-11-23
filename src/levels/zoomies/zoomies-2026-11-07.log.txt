@@ -1,0 +1,11 @@
+zoomies.log v1
+date: 2026-11-07
+03:01:52  start  hallway
+03:01:58  lap 1  hallway -> bedroom -> hallway
+03:02:09  lap 2  hallway -> bedroom -> hallway
+03:02:17  lap 3  over the sofa, not around it
+03:02:30  lap 4  hallway -> bedroom -> hallway
+03:02:41  lap 5  stop at the bowl. empty. noted.
+03:02:55  lap 6  hallway -> bedroom -> Robert
+03:03:04  end    sat in the hallway. stared at the wall.
+knocked over: nothing

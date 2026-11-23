@@ -5,6 +5,7 @@ import { LUNA_COMMANDS } from "./luna-commands.ts";
 import type { Command } from "./shell.ts";
 import { TOY_COMMANDS } from "./toy-commands.ts";
 import { nc } from "../levels/overflow/command.ts";
+import { crontabCommand } from "../levels/zoomies/command.ts";
 import { sqlite, sqlite3 } from "../levels/sqlite/command.ts";
 import { lunagpt, RIVAL_COMMANDS } from "../lunagpt/command.ts";
 
@@ -60,6 +61,7 @@ export const ALL_COMMANDS: Command[] = [
   sqlite,
   sqlite3,
   nc,
+  crontabCommand,
   lunagpt,
   ...RIVAL_COMMANDS,
 ];

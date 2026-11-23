@@ -30,6 +30,11 @@ export const HINTS: Record<string, string[]> = {
     "Crash it on purpose. lunad keeps a crash log of what the pointer held when it died.",
     "The map says where dispense_sardine lives. Write that address the way the machine stores numbers.",
   ],
+  zoomies: [
+    "I do zoomies at 3 am. Robert logs them. Lately he encrypts the logs. Badly.",
+    "Read his tool. Then ask where the key comes from. Robert thinks nobody can guess it.",
+    "A clock is not a secret. His tool runs on a schedule, and last week's log shows how every log starts.",
+  ],
   night: [
     "There are two pictures of the same night in ~/pictures. Same picture, different bytes.",
     "Compare the files, not the pixels. Count the colours in each palette.",
@@ -48,5 +53,6 @@ export const TOPICS: [string, RegExp][] = [
   ["git-history", /\b(git|github|history|commits?|repo|repository|leak\w*|dispenser)\b/],
   ["lunagpt", /\b(lunagpt|system prompt|prompts?|injection|jailbreak|filter|setup)\b/],
   ["night", /\b(night|pictures?|photos?|images?|png|pov|stego\w*|palette)\b/],
+  ["zoomies", /\b(zoomies|logs?|zoomcrypt|cron|crontab|encrypt\w*|golang|rand)\b/],
   ["overflow", /\b(nc|daemon|dispense|overflow|pointer|map|core|crash|segfault|exploit)\b/],
 ];

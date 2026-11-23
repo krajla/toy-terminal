@@ -1,0 +1,5 @@
+# crontab for guest
+# m  h        dom mon dow  command
+CRON_TZ=UTC
+# 2026-11-10: encrypt the zoomies logs. What happens at 3 am stays at 3 am.
+0    9,15,21  *   *   *    ~/bin/zoomcrypt ~/logs/zoomies-$(date +\%F).log
