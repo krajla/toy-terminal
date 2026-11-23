@@ -31,7 +31,6 @@ const SOURCES: Record<string, Source> = {
   league: { file: "WhatsApp Image 2026-11-21 at 21.34.07.jpeg", crop: { left: 0, top: 700, width: 3024, height: 3332 } },
   swipe: { file: "WhatsApp Image 2026-11-21 at 21.35.03 (2).jpeg" },
   boss: { file: "WhatsApp Image 2026-11-21 at 21.35.03.jpeg" },
-  leader: { file: "WhatsApp Image 2026-11-21 at 13.47.47.jpeg", crop: { left: 1050, top: 1650, width: 1200, height: 1100 } },
   night: { file: "WhatsApp Image 2026-11-21 at 21.34.07 (1).jpeg", crop: { left: 0, top: 1000, width: 2550, height: 3000 } },
 };
 

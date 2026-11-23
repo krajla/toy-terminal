@@ -2,7 +2,7 @@ import { catsay as drawCatsay } from "../fun/catsay.ts";
 import { feed as feedLuna, isMealTime } from "../fun/feeding.ts";
 import { nextFortune } from "../fun/fortunes.ts";
 import { zoomToFactionSheet } from "../fun/galaxy-zoom.ts";
-import { leaderCard } from "../fun/leader-card.ts";
+import { playArcs } from "../fun/arcs-trick.ts";
 import { playScene, sandworm } from "../fun/scenes.ts";
 import { clip, LUNA_PHOTOS, photo, PLAY_CLIP, POSES, type LunaPhoto } from "../luna.ts";
 import type { TerminalApi } from "../term/types.ts";
@@ -75,9 +75,8 @@ const GAMES: Record<string, (term: TerminalApi) => void | Promise<void>> = {
     term.print("Her action card sits in slot 5, at full strength. The action is SLEEP.", "dim");
     term.print("Game night is cancelled until she leaves. She will not leave.", "dim");
   },
-  arcs(term) {
-    term.print("You draft leaders for Arcs. One card is already face down in front of your seat.");
-    term.printNode(leaderCard());
+  async arcs(term) {
+    await playArcs(term);
     term.print("You drafted Luna as your leader. She drafted you as her staff.", "dim");
   },
   async ti4(term) {

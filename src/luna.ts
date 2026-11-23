@@ -31,7 +31,6 @@ export const LUNA_PHOTOS: LunaPhoto[] = [
   { name: "league", caption: "Luna, watching League. She would have flashed earlier.", width: 150, height: 165, reserved: true },
   { name: "swipe", caption: "Luna, at full speed.", width: 150, height: 200, reserved: true },
   { name: "boss", caption: "Luna, waiting for you at the end.", width: 150, height: 200, reserved: true },
-  { name: "leader", caption: "Luna, as an Arcs leader. She is not impressed.", width: 120, height: 110, reserved: true },
   NIGHT,
 ];
 

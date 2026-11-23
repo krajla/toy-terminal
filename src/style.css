@@ -264,6 +264,21 @@ img.dither {
   position: relative;
   height: 100%;
   transform-style: preserve-3d;
+}
+
+/* The card waits face down and faded until the scene deals it. Then it comes forward and turns over. */
+.leader-card {
+  opacity: 0.35;
+  transform: translateY(12px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.leader-card.dealt {
+  opacity: 1;
+  transform: none;
+}
+
+.leader-card.dealt .leader-inner {
   animation: leader-flip 0.9s ease-in-out 0.4s both;
 }
 
@@ -298,10 +313,6 @@ img.dither {
     radial-gradient(circle at 50% 32%, #3a3426, #282418 70%);
 }
 
-.leader-front .leader-sky {
-  flex: 0 0 56%;
-}
-
 .leader-edge {
   position: absolute;
   inset: 0 0 auto;
@@ -316,67 +327,11 @@ img.dither {
   text-shadow: 0 0 2px rgb(210 205 191 / 0.5);
 }
 
-.leader-number {
-  position: absolute;
-  top: 2px;
-  right: 6px;
-  z-index: 1;
-  color: #282418;
-  font-weight: bold;
-}
-
-.leader-sky img.dither {
-  position: absolute;
-  left: 50%;
-  bottom: 6px;
-  width: 76%;
-  height: auto;
-  margin: 0;
-  transform: translateX(-50%);
-  border-radius: 50% 50% 6px 6px;
-}
-
-/* The rules panel: light paper with dark text, the name in small capitals over a rule. */
-.leader-panel {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  padding: 6px 10px 8px;
-  color: #1c2230;
-  text-shadow: none;
-  font-family: ui-sans-serif, system-ui, sans-serif;
-}
-
-.leader-name {
-  font-family: Georgia, serif;
-  font-size: 18px;
-  font-variant: small-caps;
-  letter-spacing: 0.15em;
-  text-align: center;
-}
-
-.leader-rule {
+/* The front is the scanned card with Luna in it, made by scripts/arcs-leader.ts. */
+.leader-front img {
+  display: block;
   width: 100%;
-  margin: 2px 0 6px;
-  border: 0;
-  border-top: 1px solid #1c2230;
-}
-
-.leader-panel p {
-  margin: 0 0 5px;
-}
-
-.leader-panel b {
-  color: #8a5a1f;
-}
-
-.leader-setup {
-  display: flex;
-  justify-content: space-between;
-  margin-top: auto;
-  padding-top: 4px;
-  border-top: 1px solid #aab4c5;
-  font-family: ui-monospace, monospace;
+  height: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -389,8 +344,10 @@ img.dither {
   .px-pupil,
   .finale-fish,
   .chomp,
-  .chomp.big {
+  .chomp.big,
+  .leader-card {
     animation: none;
+    transition: none;
   }
 
   .leader-inner {
@@ -555,4 +512,152 @@ img.dither {
 @keyframes chomp {
   30% { transform: scale(1.03) rotate(-1deg); }
   60% { transform: scale(0.98) rotate(1deg); }
+}
+
+/* play arcs: a trick on a small table. The cards come in from the left, Luna waddles in from the right and knocks them off. */
+.arcs-table {
+  position: relative;
+  width: min(100%, 720px);
+  aspect-ratio: 16 / 7;
+  margin: 6px 0;
+  overflow: hidden;
+  border: 1px solid #2a3140;
+  border-radius: 8px;
+  background: radial-gradient(circle at 50% 40%, #1a2130, #0d1118 75%);
+}
+
+.action-card {
+  position: absolute;
+  top: 12%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  width: 21%;
+  aspect-ratio: 5 / 7;
+  padding: 6px 4px 10px;
+  border-radius: 6px;
+  background: #e9e4d8;
+  color: #1b1b1b;
+  text-shadow: none;
+  opacity: 0;
+  transform: translateX(-140%) rotate(-8deg);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.3, 1), opacity 0.3s;
+}
+
+.action-card:nth-child(1) { left: 9%; }
+.action-card:nth-child(2) { left: 39%; }
+.action-card:nth-child(3) { left: 69%; }
+
+.action-card.dealt {
+  opacity: 1;
+  transform: rotate(var(--tilt, 0deg));
+}
+
+.action-card:nth-child(1).dealt { --tilt: -3deg; }
+.action-card:nth-child(2).dealt { --tilt: 2deg; }
+.action-card:nth-child(3).dealt { --tilt: -1deg; }
+
+.action-suit {
+  width: 100%;
+  padding: 2px 0;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.action-number {
+  font-size: 44px;
+  font-weight: bold;
+}
+
+/* The suit colours of the Arcs action cards. */
+.aggression .action-suit { background: #b8443c; }
+.construction .action-suit { background: #c98a3a; }
+.mobilization .action-suit { background: #4f8f6a; }
+
+/* The table and the leader card side by side, or the card below on a narrow screen. */
+.arcs-scene {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.arcs-scene .arcs-table {
+  flex: 0 1 720px;
+}
+
+.arcs-scene .leader-card {
+  flex: 0 0 auto;
+  width: min(260px, 100%);
+  margin: 6px 0;
+}
+
+/* Luna keeps her own proportions and waddles in like a penguin: small rocking steps, pivoting on her feet. */
+.arcs-table img.arcs-luna {
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  width: auto;
+  height: 94%;
+  margin: 0;
+  border-radius: 6px;
+  transform: translateX(240%);
+  transform-origin: 50% 100%;
+}
+
+.arcs-table img.arcs-luna.waddle {
+  animation: waddle 2.4s linear forwards;
+}
+
+@keyframes waddle {
+  0% { transform: translateX(240%) rotate(0deg); }
+  12% { transform: translateX(200%) rotate(-7deg); }
+  25% { transform: translateX(160%) rotate(7deg); }
+  37% { transform: translateX(120%) rotate(-7deg); }
+  50% { transform: translateX(80%) rotate(7deg); }
+  62% { transform: translateX(40%) rotate(-6deg); }
+  75% { transform: translateX(0%) rotate(5deg); }
+  87% { transform: translateX(-35%) rotate(-3deg); }
+  100% { transform: translateX(-50%) rotate(0deg); }
+}
+
+.arcs-table img.arcs-luna.waddle.swat {
+  animation: swat 0.5s ease-in-out;
+  transform: translateX(-50%);
+}
+
+@keyframes swat {
+  0%, 100% { transform: translateX(-50%) rotate(0deg); }
+  30% { transform: translateX(-46%) rotate(-12deg); }
+  60% { transform: translateX(-56%) rotate(9deg); }
+}
+
+.action-card.dealt.knocked {
+  opacity: 0;
+  transform: translate(var(--fall-x), 170%) rotate(var(--fall-turn));
+  transition: transform 0.7s cubic-bezier(0.5, 0, 0.9, 0.6), opacity 0.7s ease-in;
+}
+
+.action-card:nth-child(1) { --fall-x: -30%; --fall-turn: -50deg; }
+.action-card:nth-child(2) { --fall-x: 10%; --fall-turn: 35deg; }
+.action-card:nth-child(3) { --fall-x: 45%; --fall-turn: 70deg; }
+
+/* These rules come after the animations above, so that they win at equal specificity. */
+@media (prefers-reduced-motion: reduce) {
+  .action-card,
+  .action-card.dealt.knocked {
+    transition: none;
+  }
+
+  .arcs-table img.arcs-luna.waddle,
+  .arcs-table img.arcs-luna.waddle.swat {
+    animation: none;
+    transform: translateX(-50%);
+  }
 }
