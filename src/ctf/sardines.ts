@@ -19,6 +19,7 @@ export const SARDINES: Sardine[] = [
   { id: "sqlite", name: "the stash", tier: "medium", sha256: "00f48718cd820713099db9122a3b849cf8e69803048c0139112ebde439aa11c5" },
   { id: "case-file", name: "the case file", tier: "medium", sha256: "d4eb96378ad70483fd68ab4e870d0e8b4e2be011aae6948e468e9eba4d0574ef" },
   { id: "night", name: "the night vision", tier: "medium", sha256: "52d8dfd6e02b2aade597556227dbc07ec555ef89320d0e206f3dff654c1d71e6" },
+  { id: "lunagpt", name: "the system prompt", tier: "medium", sha256: "bc3b1bad21d10cef8dc92a6df9c1dee22378f96b89bd430ef9e0ba00cd8e9b1a" },
   // This flag sits in the public git history of the site, in a commit that a later commit reverts.
   { id: "git-history", name: "the leaked key", tier: "hard", sha256: "2115da2f24f39c5b76576ed31eadf6d87e3f046c6e0b1b3495b8a6ec6dfa53d6" },
 ];

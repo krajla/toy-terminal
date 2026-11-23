@@ -193,6 +193,9 @@ export class Terminal implements TerminalApi {
 
   private render(): void {
     this.el.prompt.replaceChildren(...this.promptParts(this.session).map(partElement));
+    const hint = this.session.inputHint;
+    this.el.line.classList.toggle("boxed", hint !== undefined);
+    this.el.line.dataset.hint = hint ?? "";
     this.el.line.hidden = this.busy;
     if (!this.busy) {
       this.possessed = this.session.possession?.();
@@ -242,6 +245,7 @@ export class Terminal implements TerminalApi {
     } else if (e.ctrlKey && e.key === "c") {
       e.preventDefault();
       this.printParts([...this.promptParts(this.session), { text: `${input.value}^C` }]);
+      if (!input.value && this.session.leaveOnInterrupt && this.sessions.length > 1) return this.pop();
       this.setInput("");
       this.currentHistory.reset();
     }

@@ -55,6 +55,24 @@ body {
   caret-color: var(--amber);
 }
 
+/* A coding agent's input: a rounded box with a hint line under it. */
+.line.boxed {
+  position: relative;
+  margin: 8px 0 2em;
+  padding: 4px 10px;
+  border: 1px solid var(--dim);
+  border-radius: 6px;
+}
+
+.line.boxed::after {
+  content: attr(data-hint);
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 10px;
+  color: var(--dim);
+  font-size: 0.85em;
+}
+
 .dim { color: var(--dim); }
 .blue { color: var(--blue); }
 .amber { color: var(--amber); }
@@ -365,7 +383,10 @@ img.dither {
   .clip img,
   .shake,
   .beat,
-  .leader-inner {
+  .leader-inner,
+  .px-eye,
+  .px-eye-low,
+  .px-pupil {
     animation: none;
   }
 
@@ -383,5 +404,91 @@ img.dither {
   /* iOS zooms into inputs below 16px */
   #in {
     font-size: 16px;
+  }
+}
+
+/* LunaGPT: the start screen, the work log of the agent, and the mascot. */
+.ok { color: #8fb573; }
+.bold { font-weight: bold; }
+.add { background: rgb(143 181 115 / 0.18); color: #b9d4a4; }
+.del { background: rgb(224 96 90 / 0.18); color: #e8a19c; }
+.done { color: var(--dim); text-decoration: line-through; }
+.elbow { display: inline-block; width: 1ch; overflow: visible; }
+.row.gone { display: none; }
+
+.tui-welcome {
+  display: flex;
+  gap: 16px;
+  width: min(100%, 720px);
+  box-sizing: border-box;
+  margin: 6px 0 4px;
+  padding: 10px 14px 12px;
+  border: 1px solid var(--amber);
+  border-radius: 8px;
+}
+
+.tui-welcome legend {
+  padding: 0 4px;
+  color: var(--amber);
+}
+
+.tui-left {
+  display: flex;
+  flex: 0 0 44%;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-right: 16px;
+  border-right: 1px solid var(--amber);
+  text-align: center;
+}
+
+.tui-hello {
+  font-weight: bold;
+}
+
+.tui-right {
+  flex: 1;
+}
+
+.tui-rule {
+  margin: 8px 0;
+  border: 0;
+  border-top: 1px solid var(--amber);
+}
+
+.mascot {
+  width: 126px;
+  height: 72px;
+  margin: 6px 0;
+  shape-rendering: crispEdges;
+}
+
+.px-fur { fill: #8f98a8; }
+.px-ear { fill: #4f5b73; }
+.px-nose { fill: #d98c8c; }
+.px-whisker { fill: #c9d1dc; }
+.px-eye { fill: var(--amber); animation: blink 4.5s step-end infinite; }
+.px-pupil { fill: #1c2230; animation: blink 4.5s step-end infinite; }
+.px-eye-low { fill: var(--amber); animation: blink-low 4.5s step-end infinite; }
+
+/* Luna blinks slowly: the top of each eye takes the colour of the fur, and the bottom becomes a dark lid line. */
+@keyframes blink {
+  94%, 97% { fill: #8f98a8; }
+}
+
+@keyframes blink-low {
+  94%, 97% { fill: #4f5b73; }
+}
+
+@media (max-width: 600px) {
+  .tui-welcome {
+    flex-direction: column;
+  }
+
+  .tui-left {
+    padding: 0 0 10px;
+    border-right: 0;
+    border-bottom: 1px solid var(--amber);
   }
 }

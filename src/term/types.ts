@@ -47,6 +47,10 @@ export interface Session {
   promptParts?(): Part[];
   /** Text that takes over the next input line: each key the player presses types its next character instead. */
   possession?(): string | undefined;
+  /** Draws the input line in a box with this hint under it, as a coding agent does. */
+  readonly inputHint?: string;
+  /** Ctrl+C on an empty line leaves this session, as it does in a chat client. */
+  readonly leaveOnInterrupt?: boolean;
   run(line: string, term: TerminalApi): void | Promise<void>;
   complete?(line: string): Completion;
 }
