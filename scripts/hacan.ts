@@ -1,75 +1,13 @@
 // Makes public/luna/hacan.png: the Hacan faction sheet of Twilight Imperium with Luna's face and parody text.
 // The inputs are in images/ (gitignored). sharp writes no metadata unless asked to.
-import sharp, { type OverlayOptions } from "sharp";
+import sharp from "sharp";
 import { join } from "node:path";
+import { erase, face, lowBit, paragraph, text, type Line } from "./lib/compose.ts";
 
 const ROOT = join(import.meta.dir, "..");
 const SHEET = join(ROOT, "images", "Pasted 2026-11-23 at 2.58.02 PM.png");
 const PHOTO = join(ROOT, "images", "WhatsApp Image 2026-11-21 at 21.34.07 (5).jpeg");
 const OUT = process.argv[2] ?? join(ROOT, "public", "luna", "hacan.png");
-
-interface Box {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}
-
-// A median filter wipes thin letters but keeps the colours of the background behind them.
-async function erase(sheet: Buffer, box: Box, size = 15): Promise<OverlayOptions> {
-  let input = await sharp(sheet).extract(box).median(size).png().toBuffer();
-  input = await sharp(input).median(size).blur(2).png().toBuffer();
-  const pad = 6;
-  const edge = Buffer.from(`<svg width="${box.width}" height="${box.height}" xmlns="http://www.w3.org/2000/svg"><defs><filter id="b"><feGaussianBlur stdDeviation="${pad / 2}"/></filter></defs>
-<rect x="${pad}" y="${pad}" width="${box.width - 2 * pad}" height="${box.height - 2 * pad}" fill="#fff" filter="url(#b)"/></svg>`);
-  input = await sharp(input).ensureAlpha().composite([{ input: edge, blend: "dest-in" }]).png().toBuffer();
-  return { input, left: box.left, top: box.top };
-}
-
-const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
-
-interface Line {
-  x: number;
-  y: number;
-  text: string;
-  size: number;
-  font: string;
-  fill?: string;
-  weight?: string;
-  style?: string;
-  anchor?: string;
-}
-
-// One line of text for each string, from the top down.
-const paragraph = (x: number, y: number, step: number, texts: readonly string[], style: Omit<Line, "x" | "y" | "text">): Line[] =>
-  texts.map((t, i) => ({ ...style, x, y: y + i * step, text: t }));
-
-function text(lines: Line[]): Buffer {
-  const body = lines
-    .map(
-      (l) =>
-        `<text x="${l.x}" y="${l.y}" font-family="${l.font}" font-size="${l.size}" font-weight="${l.weight ?? "normal"}" font-style="${l.style ?? "normal"}" fill="${l.fill ?? "#fff"}" text-anchor="${l.anchor ?? "start"}">${esc(l.text)}</text>`,
-    )
-    .join("");
-  return Buffer.from(`<svg width="1200" height="816" xmlns="http://www.w3.org/2000/svg">${body}</svg>`);
-}
-
-async function face(): Promise<OverlayOptions> {
-  const [w, h] = [126, 134];
-  const mask = Buffer.from(`<svg width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg"><defs><filter id="b"><feGaussianBlur stdDeviation="${w / 18}"/></filter></defs>
-<ellipse cx="${w / 2}" cy="${h / 2 + 2}" rx="${w * 0.42}" ry="${h * 0.44}" fill="#fff" filter="url(#b)"/></svg>`);
-  // A warm shift matches her grey fur to the golden light of the painting.
-  const warm = await sharp(PHOTO)
-    .rotate()
-    .extract({ left: 820, top: 880, width: 940, height: 900 })
-    .resize(w, h, { fit: "cover" })
-    .linear([1.1, 0.98, 0.78], [8, 0, -12])
-    .modulate({ saturation: 1.15 })
-    .png()
-    .toBuffer();
-  const input = await sharp(warm).ensureAlpha().composite([{ input: mask, blend: "dest-in" }]).png().toBuffer();
-  return { input, left: 788 - w / 2, top: 152 - h / 2 };
-}
 
 const TITLE = "Avenir Next";
 const BODY = "Avenir Next";
@@ -121,19 +59,16 @@ const lines: Line[] = [
   ...paragraph(46, 84, 14, ["After you knock a die off the table during a", "space combat in this system, you may spend", "1 sardine to apply +1 to the result."], { size: 12, font: BODY }),
 ];
 
-const COLOURS = 16;
-
-// The art is dithered at half size and scaled back up with hard pixel edges, to match the dithered photos.
-// The text goes on afterwards at full size, so that it stays readable.
-const painted = await sharp(erased).composite([await face()]).png().toBuffer();
-const small = await sharp(painted)
-  .resize(600, 408)
-  .modulate({ saturation: 0.5, brightness: 0.9 })
-  .png({ palette: true, colours: COLOURS, dither: 1 })
-  .toBuffer();
-const art = await sharp(small).resize(1200, 816, { kernel: "nearest" }).png().toBuffer();
-await sharp(art)
-  .composite([{ input: text(lines), left: 0, top: 0 }])
-  .png({ palette: true, colours: COLOURS + 8, dither: 0, compressionLevel: 9 })
-  .toFile(OUT);
+// A warm shift matches her grey fur to the golden light of the painting.
+const lunaFace = await face({
+  photo: PHOTO,
+  crop: { left: 820, top: 880, width: 940, height: 900 },
+  width: 126,
+  height: 134,
+  centerX: 788,
+  centerY: 152,
+  shift: { a: [1.1, 0.98, 0.78], b: [8, 0, -12], saturation: 1.15 },
+});
+const painted = await sharp(erased).composite([lunaFace]).png().toBuffer();
+await lowBit(painted, text(lines, 1200, 816), OUT, { width: 1200, height: 816, colours: 16, saturation: 0.5, brightness: 0.9 });
 console.log(OUT);
