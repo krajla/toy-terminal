@@ -6,7 +6,8 @@ import { leaderCard } from "../fun/leader-card.ts";
 import { playScene, sandworm } from "../fun/scenes.ts";
 import { clip, LUNA_PHOTOS, photo, PLAY_CLIP, POSES, type LunaPhoto } from "../luna.ts";
 import type { TerminalApi } from "../term/types.ts";
-import { freshPicker, randomItem } from "../fun/random.ts";
+import { PetMood } from "../fun/pet.ts";
+import { freshPicker } from "../fun/random.ts";
 import type { Command } from "./shell.ts";
 
 
@@ -125,25 +126,7 @@ export const feed: Command = {
   complete: () => ["luna"],
 };
 
-const HAPPY = String.raw`   .-"""-.
-  /=_   _=\
- | (^) (^) |   purr
- |   =v=   |
-  \  ---  /`;
-
-const ANGRY = String.raw`   .-"""-.
-  /=_   _=\
- | (>) (<) |   hss
- |   =v=   |
-  \  ~~~  /`;
-
-const PETS = [
-  [HAPPY, "Purr. Luna leans into your hand.", "This is the best day of your life."],
-  [ANGRY, "Luna allows exactly three pets.", "On the fourth, she bites. You knew the rules."],
-  [HAPPY, "Luna rolls on her back and shows the belly.", "It is a trap. It is always a trap."],
-  [ANGRY, "Luna looks at your hand, then at you.", "She walks away. You will think about this tonight."],
-] as const;
-
+const mood = new PetMood();
 const nextPose = freshPicker(POSES);
 
 export const pet: Command = {
@@ -152,10 +135,10 @@ export const pet: Command = {
   hidden: true,
   run(args, term) {
     if (args[0] !== "luna") return term.print("pet: there is only one cat here. Try: pet luna", "err");
-    const [face, what, verdict] = randomItem(PETS) ?? PETS[0];
-    term.print(face, "amber");
-    term.print(what);
-    term.print(verdict, "dim");
+    const step = mood.next();
+    term.print(step.art, step.cls);
+    term.print(step.what);
+    term.print(step.verdict, "dim");
   },
   complete: () => ["luna"],
 };

@@ -1,14 +1,8 @@
 const WIDTH = 40;
 
-// Luna as a Scottish Fold: the ears fold flat, so the head is round with no points.
-const LUNA = String.raw`
-        \
-         \   .-"""-.
-            /=_   _=\
-           | (o) (o) |
-           |   =v=   |
-            \  ---  /
-             '-...-'`;
+import { sittingCat } from "./cat-art.ts";
+
+const LUNA = ["    \\", "     \\", sittingCat("( o.o )")].join("\n");
 
 function wrap(text: string): string[] {
   const lines: string[] = [];
@@ -35,5 +29,5 @@ export function catsay(text: string): string {
           const [open, close] = i === 0 ? ["/", "\\"] : i === lines.length - 1 ? ["\\", "/"] : ["|", "|"];
           return `${open} ${l.padEnd(width)} ${close}`;
         });
-  return [` ${"_".repeat(width + 2)}`, ...body, ` ${bar}`].join("\n") + LUNA;
+  return [` ${"_".repeat(width + 2)}`, ...body, ` ${bar}`, LUNA].join("\n");
 }
