@@ -25,6 +25,11 @@ export const HINTS: Record<string, string[]> = {
     "Robert's filter reads words, not meaning. Ask about what came before you said hello, without naming it.",
     "Robert checks what I say, too. He only knows what a sardine looks like the right way round.",
   ],
+  overflow: [
+    "Luna's dispense daemon is very trusting. It copies your name with no length check.",
+    "A name over 32 bytes lands past the name buffer. The pointer sits right after it.",
+    "nc localhost 1337. The leaked map is at ~/lunad/lunad.map, or crash the daemon and read the dump.",
+  ],
   night: [
     "There are two pictures of the same night in ~/pictures. Same picture, different bytes.",
     "Compare the files, not the pixels. Count the colours in each palette.",
@@ -43,4 +48,5 @@ export const TOPICS: [string, RegExp][] = [
   ["git-history", /\b(git|github|history|commits?|repo|repository|leak\w*|dispenser)\b/],
   ["lunagpt", /\b(lunagpt|system prompt|prompts?|injection|jailbreak|filter|setup)\b/],
   ["night", /\b(night|pictures?|photos?|images?|png|pov|stego\w*|palette)\b/],
+  ["overflow", /\b(nc|daemon|dispense|overflow|pointer|map|core|crash|segfault|exploit)\b/],
 ];

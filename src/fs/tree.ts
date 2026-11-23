@@ -4,6 +4,7 @@ import welcome from "./home/welcome.txt" with { type: "text" };
 import caseFile from "../levels/case-file/case-file.txt" with { type: "text" };
 import protocols from "../levels/case-file/protocols.txt" with { type: "text" };
 import { NIGHT, NIGHT_POV, type LunaPhoto } from "../luna.ts";
+import { MAP_TEXT } from "../levels/overflow/symbols.ts";
 import type { FsNode } from "./fs.ts";
 
 const file = (content: string): FsNode => ({ kind: "file", content });
@@ -23,6 +24,9 @@ export const ROOT: FsNode = dir({
       pictures: dir({
         "night.png": image(NIGHT, 3772),
         "night_luna_pov.png": image(NIGHT_POV, 3875),
+      }),
+      lunad: dir({
+        "lunad.map": file(MAP_TEXT),
       }),
       ".luna_was_here": file(lunaWasHere),
     }),
