@@ -1,0 +1,10 @@
+HANDLER PROTOCOLS (ABRIDGED)
+
+1  No real names on an open line.
+2  Burn your notes after you file the report.
+3  Report Sanity loss within 24 hours.
+4  Code names start with the letter of the cell.
+5  Photographs of a subject are evidence.
+6  Never stay on a site alone after dark.
+7  Appendices are enciphered with Vigenère.
+   The keyword is the operation codename.

@@ -35,7 +35,7 @@ export const echo: Command = {
 };
 
 // Robert's old session. Later levels add their hints here.
-const ROBERTS_HISTORY = ["ls -a", "cat .luna_was_here", "vim .luna_was_here", "feed luna", "feed luna", "man luna", "sudo feed luna", "play ark-nova", "roll 2d6", "sqlite luna.db", "clear"];
+const ROBERTS_HISTORY = ["ls -a", "cat .luna_was_here", "vim .luna_was_here", "feed luna", "feed luna", "man luna", "sudo feed luna", "play ark-nova", "roll 2d6", "sqlite luna.db", "ls archive", "clear"];
 
 export const history: Command = {
   name: "history",

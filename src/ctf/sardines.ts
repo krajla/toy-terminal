@@ -17,6 +17,7 @@ export const SARDINES: Sardine[] = [
   { id: "robots", name: "the tax return", tier: "easy", sha256: "11c5cb6da3a529b38c431b6e8a692bda119cb6a25e64490f5253611e0911b44d" },
   { id: "header", name: "the header", tier: "easy", sha256: "28f86bc63437eb4b4047fceeb8ccf2496eacc8ebc4870f58dc9863ed9a6430cc" },
   { id: "sqlite", name: "the stash", tier: "medium", sha256: "00f48718cd820713099db9122a3b849cf8e69803048c0139112ebde439aa11c5" },
+  { id: "case-file", name: "the case file", tier: "medium", sha256: "d4eb96378ad70483fd68ab4e870d0e8b4e2be011aae6948e468e9eba4d0574ef" },
 ];
 
 export async function sha256Hex(text: string): Promise<string> {

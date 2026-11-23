@@ -64,6 +64,18 @@ body {
 .fur { color: #b4bcc8; }
 .yellow { color: #e8c547; }
 
+/* A sloppy redaction: a bar the colour of the text, with the text still under it. Selection shows it. */
+.leaky {
+  background: var(--fg);
+  color: var(--fg);
+  text-shadow: none;
+}
+
+.leaky::selection {
+  background: var(--amber);
+  color: var(--bg);
+}
+
 a {
   color: var(--blue);
 }

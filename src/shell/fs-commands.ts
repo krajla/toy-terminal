@@ -1,5 +1,5 @@
 import { completePath, HOME, lookup, resolve } from "../fs/fs.ts";
-import type { Cell } from "../term/types.ts";
+import type { Cell, Part } from "../term/types.ts";
 import type { Command, Shell } from "./shell.ts";
 
 const completeLast = (args: string[], shell: Shell) => completePath(shell.root, shell.cwd, args.at(-1) ?? "");
@@ -54,6 +54,12 @@ export const pwd: Command = {
   },
 };
 
+// A file can mark a sloppy redaction as ⟦text⟧: it shows as a solid bar, but the text is still there,
+// so selecting or copying it reveals the words, as with a badly redacted PDF.
+export function redactions(content: string): Part[] {
+  return content.split(/⟦([^⟧]*)⟧/).map((text, i) => (i % 2 ? { text, cls: "leaky" } : { text }));
+}
+
 export const cat: Command = {
   name: "cat",
   summary: "print a file",
@@ -63,7 +69,7 @@ export const cat: Command = {
       const node = lookup(shell.root, resolve(shell.cwd, path));
       if (!node) term.print(`cat: ${path}: No such file or directory`, "err");
       else if (node.kind === "dir") term.print(`cat: ${path}: Is a directory`, "err");
-      else term.print(node.content.replace(/\n$/, ""));
+      else term.printParts(redactions(node.content.replace(/\n$/, "")));
     }
   },
   complete: completeLast,
