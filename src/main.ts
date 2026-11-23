@@ -1,9 +1,9 @@
 import { Progress } from "./ctf/progress.ts";
-import { SARDINES } from "./ctf/sardines.ts";
 import { ROOT } from "./fs/tree.ts";
 import { YellowMark } from "./fun/yellow-mark.ts";
 import { photo, POSES } from "./luna.ts";
 import { ALL_COMMANDS } from "./shell/commands.ts";
+import { intro } from "./shell/intro.ts";
 import { Shell } from "./shell/shell.ts";
 import { Terminal } from "./term/terminal.ts";
 
@@ -29,8 +29,5 @@ const term = new Terminal(
 
 const pose = POSES[Math.floor(Math.random() * POSES.length)];
 if (pose) term.printNode(photo(pose));
-term.print("luna.krajla.space", "amber");
-term.print(`Luna has hidden ${SARDINES.length} sardines in this machine. Find them before she eats them.`);
-term.print("Type 'help' to start.", "dim");
-term.print();
+intro(term);
 term.focus();

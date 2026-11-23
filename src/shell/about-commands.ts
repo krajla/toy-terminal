@@ -28,30 +28,6 @@ export const about: Command = {
     term.print("It is mostly for my friends and my gaming group, so some jokes are inside jokes.");
     term.print("If you wandered in from somewhere else: welcome. Have a look around.");
     term.print();
-    term.printParts([
-      { text: "Things to try: " },
-      cmd("luna"),
-      { text: ", " },
-      cmd("play"),
-      { text: ", " },
-      cmd("roll"),
-      { text: ", " },
-      cmd("fortune"),
-      { text: ", " },
-      cmd("lunagpt"),
-      { text: ". " },
-      cmd("help"),
-      { text: " lists the rest. Not every command is listed." },
-    ]);
-    term.print();
-    term.printParts([
-      { text: "Luna has also hidden sardines in this machine. Start with " },
-      cmd("welcome.txt"),
-      { text: ", and count what you find with " },
-      cmd("sardines"),
-      { text: "." },
-    ]);
-    term.print();
     term.print("I made this for you. I hope you have some fun, and that it is not terribly difficult.");
     term.print("If you get stuck, persist. Or send me a DM, if you know me.");
     term.printParts([{ text: "source  ", cls: "dim" }, { text: SOURCE, href: SOURCE }]);
