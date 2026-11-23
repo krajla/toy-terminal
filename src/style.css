@@ -64,6 +64,73 @@ body {
 .fur { color: #b4bcc8; }
 .yellow { color: #e8c547; }
 
+a {
+  color: var(--blue);
+}
+
+.cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--col, 14ch), 1fr));
+}
+
+img.dither {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 6px 0;
+  image-rendering: pixelated;
+}
+
+/* A character is 0.6em wide, so a scene of --cols characters fits the screen width at this size. */
+.scene {
+  overflow: hidden;
+  white-space: pre;
+  overflow-wrap: normal;
+  font-size: min(1em, calc((100vw - 32px) / (var(--cols) * 0.6)));
+  line-height: 1.2;
+}
+
+.scene.square {
+  font-size: min(6px, calc((100vw - 32px) / (var(--cols) * 0.6)));
+  line-height: 0.6;
+}
+
+.scene-canvas {
+  display: block;
+  width: min(100%, 720px);
+  margin: 6px 0;
+}
+
+.clip {
+  max-width: 100%;
+  margin: 6px 0;
+  overflow: hidden;
+}
+
+/* The image is a vertical strip of frames. Moving it up by its own height in N steps shows each frame once. */
+.clip img {
+  display: block;
+  width: 100%;
+  image-rendering: pixelated;
+  animation: clip var(--duration) steps(var(--frames)) infinite;
+}
+
+@keyframes clip {
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+.shake {
+  animation: shake 0.12s linear infinite;
+}
+
+@keyframes shake {
+  25% { transform: translate(-3px, 2px); }
+  50% { transform: translate(3px, -2px); }
+  75% { transform: translate(-2px, -3px); }
+}
+
 /* The pixel icons of `roll`, and the Yellow Sign in the prompt of a marked player. */
 .icon {
   display: block;
