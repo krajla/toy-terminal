@@ -124,7 +124,7 @@ const hack = hidden({
   name: "hack",
   summary: "hack the planet",
   async run(args, term) {
-    const target = args[0] ?? "krajla.space";
+    const target = args[0] ?? "luna.krajla.space";
     const steps = [
       `[*] scanning ${target} ...`,
       "[*] found open port: the food bowl",

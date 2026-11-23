@@ -1,4 +1,4 @@
-# krajla.space
+# luna.krajla.space
 
 A small terminal in the browser, about me and my cat, Luna.
 

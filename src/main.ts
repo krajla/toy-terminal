@@ -29,7 +29,7 @@ const term = new Terminal(
 
 const pose = POSES[Math.floor(Math.random() * POSES.length)];
 if (pose) term.printNode(photo(pose));
-term.print("krajla.space", "amber");
+term.print("luna.krajla.space", "amber");
 term.print(`Luna has hidden ${SARDINES.length} sardines in this machine. Find them before she eats them.`);
 term.print("Type 'help' to start.", "dim");
 term.print();
