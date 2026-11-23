@@ -1,6 +1,7 @@
 // A small SQL engine for the luna.db kiosk. It covers what the injection level needs: SELECT with WHERE, UNION,
 // ORDER BY and LIMIT, comments, and a few functions. Its errors copy the text and caret layout of the SQLite 3.44
-// command-line shell, because those errors are how a player learns the shape of the hidden query.
+// command-line shell, because those errors are how a player learns the shape of the hidden query. As in SQLite,
+// only errors that point at a token echo the SQL with a caret.
 
 export type Value = string | number | null;
 
@@ -19,8 +20,8 @@ export interface ResultSet {
 export class SqlError extends Error {
   constructor(
     message: string,
-    /** Character offset in the SQL text that the caret points at. */
-    readonly at: number,
+    /** Character offset in the SQL text that the caret points at. Errors without one print the message only. */
+    readonly at?: number,
   ) {
     super(message);
   }
@@ -106,14 +107,12 @@ interface ResultColumn {
 
 interface Select {
   columns: ResultColumn[];
-  from?: { name: string; at: number };
+  from?: string;
   where?: Expr;
-  at: number;
 }
 
 interface Query {
   selects: Select[];
-  unionAt: number[];
   orderBy?: { expr: Expr; desc: boolean };
   limit?: number;
 }
@@ -144,7 +143,7 @@ class Parser {
   }
 
   private fail(): never {
-    if (this.tok.kind === "end") throw new SqlError("incomplete input", this.tok.at);
+    if (this.tok.kind === "end") throw new SqlError("incomplete input");
     throw new SqlError(`near "${this.tok.text}": syntax error`, this.tok.at);
   }
 
@@ -160,14 +159,12 @@ class Parser {
 
   query(): Query {
     const selects = [this.select()];
-    const unionAt: number[] = [];
     while (this.isWord("UNION")) {
-      unionAt.push(this.tok.at);
       this.i++;
       if (this.isWord("ALL")) this.i++;
       selects.push(this.select());
     }
-    const query: Query = { selects, unionAt };
+    const query: Query = { selects };
     if (this.isWord("ORDER")) {
       this.i++;
       this.expectWord("BY");
@@ -187,14 +184,13 @@ class Parser {
     }
     if (this.isOp(";")) {
       this.i++;
-      if (this.tok.kind !== "end") throw new SqlError("You can only execute one statement at a time.", this.tok.at);
+      if (this.tok.kind !== "end") throw new SqlError("You can only execute one statement at a time.");
     }
     if (this.tok.kind !== "end") this.fail();
     return query;
   }
 
   private select(): Select {
-    const at = this.tok.at;
     this.expectWord("SELECT");
     if (this.isWord("DISTINCT")) this.i++;
     const columns: ResultColumn[] = [];
@@ -219,11 +215,11 @@ class Parser {
       }
       columns.push({ expr, name });
     } while (this.isOp(","));
-    const select: Select = { columns, at };
+    const select: Select = { columns };
     if (this.isWord("FROM")) {
       this.i++;
       if (this.tok.kind !== "word" || KEYWORDS.has(this.tok.text.toUpperCase())) this.fail();
-      select.from = { name: this.tok.text, at: this.tok.at };
+      select.from = this.tok.text;
       this.i++;
     }
     if (this.isWord("WHERE")) {
@@ -421,11 +417,11 @@ function evaluate(expr: Expr, row: Record<string, Value>): Value {
 function runSelect(db: Database, select: Select): ResultSet {
   let table: Table = { columns: [], rows: [[]] };
   if (select.from) {
-    const found = db[select.from.name.toLowerCase()];
-    if (!found) throw new SqlError(`no such table: ${select.from.name}`, select.from.at);
+    const found = db[select.from.toLowerCase()];
+    if (!found) throw new SqlError(`no such table: ${select.from}`);
     table = found;
   }
-  if (select.columns.some((c) => c.expr === "*") && !select.from) throw new SqlError("no tables specified", select.at);
+  if (select.columns.some((c) => c.expr === "*") && !select.from) throw new SqlError("no tables specified");
   const columns = select.columns.flatMap((c) => (c.expr === "*" ? table.columns : [c.name]));
   // Resolve every column once on an empty record, so a bad name fails even when no row matches.
   const probe: Record<string, Value> = Object.fromEntries(table.columns.map((c) => [c.toLowerCase(), null]));
@@ -445,24 +441,32 @@ export function execute(db: Database, sql: string): ResultSet {
   const query = new Parser(tokenize(sql)).query();
   const results = query.selects.map((s) => runSelect(db, s));
   const [first] = results;
-  if (!first) throw new SqlError("incomplete input", sql.length);
-  results.forEach((r, i) => {
-    if (i > 0 && r.columns.length !== first.columns.length) {
-      throw new SqlError("SELECTs to the left and right of UNION do not have the same number of result columns", query.unionAt[i - 1] ?? 0);
-    }
-  });
+  if (!first) throw new SqlError("incomplete input");
+  if (results.some((r) => r.columns.length !== first.columns.length)) {
+    throw new SqlError("SELECTs to the left and right of UNION do not have the same number of result columns");
+  }
   let rows = results.flatMap((r) => r.rows);
   if (query.orderBy) {
     const { expr, desc } = query.orderBy;
     const index = expr.kind === "literal" && typeof expr.value === "number" ? expr.value - 1 : expr.kind === "column" ? first.columns.findIndex((c) => c.toLowerCase() === expr.name.toLowerCase()) : -1;
-    if (index < 0 || index >= first.columns.length) throw new SqlError("ORDER BY term does not match any column in the result set", 0);
+    if (expr.kind === "literal" && (index < 0 || index >= first.columns.length)) {
+      throw new SqlError(`1st ORDER BY term out of range - should be between 1 and ${first.columns.length}`);
+    }
+    if (index < 0) throw new SqlError("1st ORDER BY term does not match any column in the result set");
     rows = rows.toSorted((a, b) => compare(a[index] ?? null, b[index] ?? null) * (desc ? -1 : 1));
   }
   if (query.limit !== undefined) rows = rows.slice(0, query.limit);
   return { columns: first.columns, rows };
 }
 
-// The CLI error layout: the message, the SQL indented by two spaces, and a caret under the fault.
+// The CLI error layout (shell_error_context in shell.c): the message, then the SQL indented by two spaces with a
+// caret under the fault. The echo drops leading characters until the fault is at most 50 in, and stops after 78.
+// A fault 25 or more characters in puts the label left of the caret.
 export function formatError(sql: string, err: SqlError): string {
-  return [`Parse error: ${err.message}`, `  ${sql}`, `  ${" ".repeat(Math.min(err.at, sql.length))}^--- error here`].join("\n");
+  const message = `Parse error: ${err.message}`;
+  if (err.at === undefined || err.at >= sql.length) return message;
+  const skip = Math.max(0, err.at - 50);
+  const at = err.at - skip;
+  const caret = at < 25 ? `${" ".repeat(at)}^--- error here` : `${" ".repeat(at - 14)}error here ---^`;
+  return [message, `  ${sql.slice(skip, skip + 78)}`, `  ${caret}`].join("\n");
 }

@@ -24,23 +24,35 @@ test("a lookup by name returns that treat", async () => {
 
 test("a stray quote leaks the query, with the caret on the string that it leaves open", async () => {
   // The input ' makes the query end in ''' and SQLite reads '' as an escaped quote, so the open string is '''.
-  const sql = treatQuery("'");
-  expect(await sqlError(sql)).toBe(
-    [`Parse error: unrecognized token: "'''"`, `  ${sql}`, `  ${" ".repeat(sql.indexOf("'"))}^--- error here`].join("\n"),
+  // The quote is 51 characters in, so SQLite drops 1 leading character and puts the label left of the caret.
+  expect(await sqlError(treatQuery("'"))).toBe(
+    [
+      `Parse error: unrecognized token: "'''"`,
+      "  ELECT name, kcal, rating FROM treats WHERE name = '''",
+      `  ${" ".repeat(36)}error here ---^`,
+    ].join("\n"),
   );
 });
 
-test("a UNION with the wrong number of columns says so, like SQLite", async () => {
-  expect(await sqlError(treatQuery("' UNION SELECT name FROM sqlite_master --"))).toStartWith(
+test("an early fault puts the label right of the caret, as SQLite does", async () => {
+  expect(await sqlError("SELECT nope FROM treats")).toBe(
+    ["Parse error: no such column: nope", "  SELECT nope FROM treats", "         ^--- error here"].join("\n"),
+  );
+});
+
+test("errors that SQLite gives no position print the message only", async () => {
+  expect(await sqlError(treatQuery("' UNION SELECT name FROM sqlite_master --"))).toBe(
     "Parse error: SELECTs to the left and right of UNION do not have the same number of result columns",
   );
+  expect(await sqlError("SELECT * FROM secrets")).toBe("Parse error: no such table: secrets");
+  expect(await sqlError("SELECT name FROM treats WHERE")).toBe("Parse error: incomplete input");
+  expect(await sqlError("SELECT name FROM treats ORDER BY 5")).toBe(
+    "Parse error: 1st ORDER BY term out of range - should be between 1 and 1",
+  );
 });
 
-test("unknown tables and columns, stacked statements and junk get SQLite's messages", async () => {
-  expect(await sqlError("SELECT nope FROM treats")).toStartWith("Parse error: no such column: nope");
-  expect(await sqlError("SELECT * FROM secrets")).toStartWith("Parse error: no such table: secrets");
-  expect(await sqlError("SELECT 1; DROP TABLE treats")).toStartWith("Parse error: You can only execute one statement at a time.");
-  expect(await sqlError("SELECT name FROM treats WHERE")).toStartWith("Parse error: incomplete input");
+test("stacked statements and junk get SQLite's messages", async () => {
+  expect(await sqlError("SELECT 1; DROP TABLE treats")).toBe("Parse error: You can only execute one statement at a time.");
   expect(await sqlError("SELECT name treats rating")).toStartWith('Parse error: near "rating": syntax error');
 });
 
