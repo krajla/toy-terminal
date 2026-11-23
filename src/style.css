@@ -177,7 +177,9 @@ img.dither {
 }
 
 /* An Arcs leader card: 70 x 120 like the real ones. It starts face down and turns over once. */
+/* The paper is muted, like the dithered photos, so that the card does not glare on the dark screen. */
 .leader-card {
+  --paper: #c4beae;
   width: min(260px, 100%);
   aspect-ratio: 70 / 120;
   margin: 8px 0;
@@ -204,9 +206,9 @@ img.dither {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 3px solid #f4f1e8;
+  border: 3px solid var(--paper);
   border-radius: 8px;
-  background: #f4f1e8;
+  background: var(--paper);
   backface-visibility: hidden;
 }
 
@@ -232,14 +234,14 @@ img.dither {
   position: absolute;
   inset: 0 0 auto;
   height: 22px;
-  background: #f4f1e8;
+  background: var(--paper);
   clip-path: polygon(0 0, 100% 0, 100% 40%, 88% 70%, 74% 45%, 60% 85%, 46% 50%, 33% 90%, 20% 55%, 8% 80%, 0 50%);
 }
 
 .leader-star {
   position: absolute;
-  color: #fcfcfb;
-  text-shadow: 0 0 4px #fcfcfb;
+  color: #d2cdbf;
+  text-shadow: 0 0 2px rgb(210 205 191 / 0.5);
 }
 
 .leader-number {
