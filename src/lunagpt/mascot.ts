@@ -1,7 +1,7 @@
 const SVG = "http://www.w3.org/2000/svg";
 
 // Luna's face as pixels: folded ears, amber eyes, pink nose, whiskers. Keys are classes in style.css.
-export const FACE = [
+const FACE = [
   "...ee....ee...",
   "..eFFFFFFFFe..",
   ".FFFFFFFFFFFF.",
@@ -12,7 +12,7 @@ export const FACE = [
   "...FFFFFFFF...",
 ];
 // The eye has an upper row (a, p) and a lower row (b). A blink closes it to a dark line in the lower row.
-export const CLASS: Record<string, string> = { F: "px-fur", e: "px-ear", a: "px-eye", p: "px-pupil", b: "px-eye-low", n: "px-nose", w: "px-whisker" };
+const CLASS: Record<string, string> = { F: "px-fur", e: "px-ear", a: "px-eye", p: "px-pupil", b: "px-eye-low", n: "px-nose", w: "px-whisker" };
 
 export function mascot(): SVGSVGElement {
   const width = FACE[0]?.length ?? 0;
