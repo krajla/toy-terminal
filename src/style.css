@@ -93,6 +93,60 @@ img.dither {
   image-rendering: pixelated;
 }
 
+/* play ti4: a frame with the size of the faction sheet. The galaxy, the sheet and the amber box sit on top of
+   each other inside it, so that the frame never changes size and the screen does not jump while it plays. */
+.zoom {
+  position: relative;
+  width: min(100%, 900px);
+  aspect-ratio: 1200 / 816;
+  margin: 6px 0;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.zoom-world {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+}
+
+/* 31.2em is the height of the 26 rows. The frame is 816/1200 as high as it is wide. */
+.zoom-galaxy {
+  position: absolute;
+  top: 0;
+  margin: 0;
+  font-size: calc(100cqw * 816 / 1200 / 31.2);
+  line-height: 1.2;
+  white-space: pre;
+}
+
+.zoom-sheet {
+  position: absolute;
+  opacity: 0;
+  image-rendering: pixelated;
+}
+
+.zoom-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.zoom-frame rect,
+.zoom-frame line {
+  fill: none;
+  stroke: #f0a63a;
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: crispEdges;
+}
+
+.zoom-frame rect {
+  stroke-dasharray: 1 1;
+}
+
 /* A character is 0.6em wide, so a scene of --cols characters fits the screen width at this size. */
 .scene {
   overflow: hidden;

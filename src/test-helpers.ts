@@ -4,7 +4,7 @@ import type { FsNode } from "./fs/fs.ts";
 import { Shell, type Command } from "./shell/shell.ts";
 import type { Session, TerminalApi } from "./term/types.ts";
 
-const element = () => ({ style: { setProperty() {} }, append() {}, setAttribute() {} });
+const element = () => ({ style: { setProperty() {} }, append() {}, replaceChildren() {}, setAttribute() {}, decode: async () => {} });
 
 // Commands that show a photo or a clip build DOM elements. This stub has the parts they touch.
 export function stubDocument() {

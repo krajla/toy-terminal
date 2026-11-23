@@ -1,8 +1,9 @@
 import { catsay as drawCatsay } from "../fun/catsay.ts";
 import { feed as feedLuna, isMealTime } from "../fun/feeding.ts";
 import { FORTUNES } from "../fun/fortunes.ts";
+import { zoomToFactionSheet } from "../fun/galaxy-zoom.ts";
 import { leaderCard } from "../fun/leader-card.ts";
-import { lunaAtTheCore, playScene, sandworm } from "../fun/scenes.ts";
+import { playScene, sandworm } from "../fun/scenes.ts";
 import { clip, LUNA_PHOTOS, photo, PLAY_CLIP, POSES, type LunaPhoto } from "../luna.ts";
 import type { TerminalApi } from "../term/types.ts";
 import type { Command } from "./shell.ts";
@@ -79,8 +80,9 @@ const GAMES: Record<string, (term: TerminalApi) => void | Promise<void>> = {
     term.print("You drafted Luna as your leader. She drafted you as her staff.", "dim");
   },
   async ti4(term) {
-    await playScene(term, () => import("ascii.rest/pieces/galaxy"), { seconds: 6, cls: "blue", overlay: lunaAtTheCore });
+    await zoomToFactionSheet(term);
     term.print("Twilight Imperium 4 takes eight hours. Luna fell asleep on Mecatol Rex at hour two.");
+    term.print("Her faction holds Mecatol Rex now. Its whole population is one grey cat.", "amber");
     term.print("Nobody can take the centre now. The galaxy is at peace.", "dim");
   },
 };

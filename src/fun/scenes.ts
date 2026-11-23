@@ -94,7 +94,7 @@ export async function playScene(term: TerminalApi, load: () => Promise<ScenePiec
 }
 
 // Merges runs of cells with the same class, so a frame becomes a few text nodes and spans, not one per cell.
-function toParts(grid: SceneCell[][]): { text: string; cls?: string }[] {
+export function toParts(grid: SceneCell[][]): { text: string; cls?: string }[] {
   const parts: { text: string; cls?: string }[] = [];
   grid.forEach((row, r) => {
     for (const cell of r ? [{ ch: "\n" }, ...row] : row) {
