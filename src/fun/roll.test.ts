@@ -60,9 +60,12 @@ describe("roll", () => {
   });
 
   test("Delta Green: matching digits under the skill is a critical, 100 is a fumble", () => {
-    // d100 fits only Delta Green. The skill pick 0 selects Alertness 50%. The last value 0.9 skips the King in Yellow.
-    const crit = result(roll("d100", sequence(0, face(44, 100), 0, 0.9)));
-    expect(crit.lines).toEqual(["1d100: [44]  (Delta Green)", "44 against Alertness 50%.", "Critical success. Twice as good. Do not write it down."]);
+    // d100 fits only Delta Green. The skill pick 0 gives Alertness 50%, or Bureaucracy 40% when the last roll had
+    // Alertness, because skills never repeat. 22 is under both. The last value 0.9 skips the King in Yellow.
+    const crit = result(roll("d100", sequence(0, face(22, 100), 0, 0.9)));
+    expect(crit.lines[0]).toBe("1d100: [22]  (Delta Green)");
+    expect(crit.lines[1]).toMatch(/^22 against (Alertness 50|Bureaucracy 40)%\.$/);
+    expect(crit.lines[2]).toBe("Critical success. Twice as good. Do not write it down.");
     expect(crit.yellowSign).toBeUndefined();
     expect(result(roll("d100", sequence(0, face(100, 100), 0, 0.9))).lines[2]).toContain("Fumble");
     expect(result(roll("d100", sequence(0, face(77, 100), 0, 0.9))).lines[2]).toContain("Fumble");
