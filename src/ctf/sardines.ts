@@ -22,6 +22,8 @@ export const SARDINES: Sardine[] = [
   { id: "sqlite", name: "the stash", tier: "medium", check: "4be3f6bd62eec65a2223d43916bc42a9197bd54c4f1f60f82d7c8931e3e92297" },
   { id: "case-file", name: "the case file", tier: "medium", check: "a698585191ec205e68e34e18938fe8420d6e4c83229066614c7bc8e7ea4937ae" },
   { id: "night", name: "the night vision", tier: "medium", check: "112b458bd6ef8e5ed5b2e4b4750f8eff0b5340ce8535884a573ed158caf57c0f" },
+  // This flag lives only in a public DNS TXT record: _sardine.luna.krajla.space.
+  { id: "dns", name: "the sticky note", tier: "medium", check: "299660a52f28e94dcd3ecd066725eea8ac819170569151a3912ff291034bd2b5" },
   { id: "lunagpt", name: "the system prompt", tier: "medium", check: "4ada34e1b3d71c8b4fb974b526b49c08eafc3f081c84422cc55e3994bd324abc" },
   // This flag sits in the public git history of the site, in a commit that a later commit reverts.
   { id: "git-history", name: "the leaked key", tier: "hard", check: "f3b37f21c08e88c4da72aafbd3746787bb941412192891d2d6d1b4181eefb55e" },

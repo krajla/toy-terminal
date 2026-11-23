@@ -24,7 +24,7 @@ const SMOKE = [
   "whoami", "about", "contact", "inflexa", "man luna", "man ls", "man nope", "fortune", "roll", "roll 3d6", "roll d100", "roll d20", "roll x",
   "luna", "luna judge", "zoomies", "play", "play sardines", "play ark-nova", "play uprising", "play dune", "play arcs", "play ti4",
   "feed luna", "feed robert", "pet luna", "catsay hello", "sl", "matrix", "hack", "coffee", "sudo ls", "rm x",
-  "rm -rf /", "exit", "gg", "ff15", "top", "uptime", "history",
+  "rm -rf /", "exit", "gg", "git status", "host luna", "nslookup luna", "ff15", "top", "uptime", "history",
 ];
 
 test("every command runs without an error", async () => {

@@ -5,6 +5,9 @@ import caseFile from "../levels/case-file/case-file.txt" with { type: "text" };
 import protocols from "../levels/case-file/protocols.txt" with { type: "text" };
 import { NIGHT, NIGHT_POV, type LunaPhoto } from "../luna.ts";
 import { MAP_TEXT } from "../levels/overflow/symbols.ts";
+import lunadReadme from "../levels/overflow/README.txt" with { type: "text" };
+import hosts from "./etc/hosts.txt" with { type: "text" };
+import resolvConf from "./etc/resolv.conf.txt" with { type: "text" };
 import zoomcrypt from "../levels/zoomies/zoomcrypt.go" with { type: "text" };
 import zoomiesOld from "../levels/zoomies/zoomies-2026-11-07.log.txt" with { type: "text" };
 import zoomiesEnc from "../levels/zoomies/zoomies-2026-11-14.log.enc" with { type: "text" };
@@ -16,6 +19,10 @@ const dir = (children: Record<string, FsNode>): FsNode => ({ kind: "dir", childr
 const image = (photo: LunaPhoto, size: number): FsNode => ({ kind: "image", photo, size });
 
 export const ROOT: FsNode = dir({
+  etc: dir({
+    hosts: file(hosts, "Nov 20 23:12"),
+    "resolv.conf": file(resolvConf),
+  }),
   home: dir({
     guest: dir({
       "welcome.txt": file(welcome),
@@ -37,6 +44,7 @@ export const ROOT: FsNode = dir({
         "zoomies-2026-11-14.log.enc": file(zoomiesEnc, "Nov 14 09:00"),
       }),
       lunad: dir({
+        README: file(lunadReadme, "Nov 22 18:40"),
         "lunad.map": file(MAP_TEXT),
       }),
       ".luna_was_here": file(lunaWasHere),

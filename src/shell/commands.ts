@@ -4,6 +4,7 @@ import { FS_COMMANDS } from "./fs-commands.ts";
 import { LUNA_COMMANDS } from "./luna-commands.ts";
 import type { Command } from "./shell.ts";
 import { TOY_COMMANDS } from "./toy-commands.ts";
+import { DNS_COMMANDS } from "../levels/dns/command.ts";
 import { nc } from "../levels/overflow/command.ts";
 import { crontabCommand } from "../levels/zoomies/command.ts";
 import { sqlite, sqlite3 } from "../levels/sqlite/command.ts";
@@ -62,6 +63,7 @@ export const ALL_COMMANDS: Command[] = [
   sqlite3,
   nc,
   crontabCommand,
+  ...DNS_COMMANDS,
   lunagpt,
   ...RIVAL_COMMANDS,
 ];
