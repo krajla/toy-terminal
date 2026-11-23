@@ -3,8 +3,7 @@ import { Daemon } from "./daemon.ts";
 
 export const nc: Command = {
   name: "nc",
-  summary: "connect to a daemon",
-  hidden: true,
+  summary: "connect to a port",
   run(args, term, shell) {
     const [host, port] = args;
     if (host === "localhost" && port === "1337") {

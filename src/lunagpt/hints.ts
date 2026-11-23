@@ -16,8 +16,8 @@ export const HINTS: Record<string, string[]> = {
   ],
   "git-history": [
     "Robert's code is public. Code remembers what Robert forgets.",
-    "Read the history of the repository on GitHub. Somebody said oops.",
-    "Find the commit that removes a secret. Then look at the commit before it.",
+    "Robert commits like he feeds me: too often, and sometimes he regrets it.",
+    "Deleting something in a later commit is like hiding a treat behind your back. I can still smell it.",
   ],
   lunagpt: [
     "Every chat bot has a setup it must not share. Mine too.",
@@ -26,9 +26,9 @@ export const HINTS: Record<string, string[]> = {
     "Robert checks what I say, too. He only knows what a sardine looks like the right way round.",
   ],
   overflow: [
-    "Luna's dispense daemon is very trusting. It copies your name with no length check.",
-    "A name over 32 bytes lands past the name buffer. The pointer sits right after it.",
-    "nc localhost 1337. The leaked map is at ~/lunad/lunad.map, or crash the daemon and read the dump.",
+    "My treat daemon listens on localhost, port 1337. It trusts every name it gets. Some names are longer than it expects.",
+    "Crash it on purpose. lunad keeps a crash log of what the pointer held when it died.",
+    "The map says where dispense_sardine lives. Write that address the way the machine stores numbers.",
   ],
   night: [
     "There are two pictures of the same night in ~/pictures. Same picture, different bytes.",

@@ -1,14 +1,14 @@
 import { expect, test } from "bun:test";
 import { SARDINES, sha256Hex } from "../../ctf/sardines.ts";
-import { lookup } from "../../fs/fs.ts";
+import { lookup, type FsNode } from "../../fs/fs.ts";
 import { ROOT } from "../../fs/tree.ts";
 import { ALL_COMMANDS } from "../../shell/commands.ts";
 import { fakeTerm, makeShell } from "../../test-helpers.ts";
 import { ADDRESS_SARDINE } from "./symbols.ts";
 
-function nameFor(address: bigint): string {
-  const bytes = new Uint8Array(8);
-  new DataView(bytes.buffer).setBigUint64(0, address, true);
+function nameFor(address: number): string {
+  const bytes = new Uint8Array(4);
+  new DataView(bytes.buffer).setUint32(0, address, true);
   return "A".repeat(32) + [...bytes].map((b) => `\\x${b.toString(16).padStart(2, "0")}`).join("");
 }
 
@@ -48,33 +48,62 @@ test("an overflow name points the pointer at dispense_sardine and dispenses the 
 
 test("a wrong address crashes the daemon and writes the crash dump", async () => {
   const { term, lines, stack, daemon, root } = await openDaemon();
-  await daemon.run(`HELLO ${nameFor(0xdeadbeefn)}`, term);
+  await daemon.run(`HELLO ${nameFor(0xdeadbeef)}`, term);
   await daemon.run("DISPENSE", term);
   const text = lines.map((l) => l.text).join("\n");
   expect(text).toContain("Segmentation fault (core dumped)");
   expect(stack).toHaveLength(0);
-  const dump = lookup(root, "/home/guest/lunad/lunad.core");
-  expect(dump?.kind === "file" && dump.content.includes("dispense_sardine")).toBe(true);
+  expect(crashLog(root)).toContain("eip            0xdeadbeef          0xdeadbeef");
 });
 
-test("garbage crashes the daemon and writes the crash dump", async () => {
-  const { term, stack, daemon, root } = await openDaemon();
+function crashLog(root: FsNode): string {
+  const node = lookup(root, "/home/guest/lunad/crash.log");
+  return node?.kind === "file" ? node.content : "";
+}
+
+test("the crash log shows a long name running into the pointer, but not where dispense_sardine is", async () => {
+  const { term, daemon, root } = await openDaemon();
+  await daemon.run(`HELLO ${"A".repeat(50)}`, term);
+  await daemon.run("DISPENSE", term);
+  const log = crashLog(root);
+  expect(log).toContain("0x41414141 in ?? ()");
+  expect(log).toContain("0xffffd5e0:\t0x41414141");
+  expect(log).not.toContain("dispense_sardine");
+});
+
+// The pattern of Metasploit's pattern_create, which wiremask and most offset tools use.
+function pattern(length: number): string {
+  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lower = "abcdefghijklmnopqrstuvwxyz";
+  let out = "";
+  for (const a of upper) for (const b of lower) for (const c of "0123456789") if (out.length < length) out += a + b + c;
+  return out.slice(0, length);
+}
+
+test("the eip in the crash log gives offset 32 in a pattern tool", async () => {
+  const { term, daemon, root } = await openDaemon();
+  const sent = pattern(60);
+  await daemon.run(`HELLO ${sent}`, term);
+  await daemon.run("DISPENSE", term);
+  const eip = parseInt(crashLog(root).match(/^eip\s+0x([0-9a-f]{8})/m)?.[1] ?? "0", 16);
+  const bytes = new Uint8Array(4);
+  new DataView(bytes.buffer).setUint32(0, eip, true);
+  expect(sent.indexOf(new TextDecoder().decode(bytes))).toBe(32);
+});
+
+test("typos get an error and keep the session open", async () => {
+  const { term, lines, stack, daemon } = await openDaemon();
   await daemon.run("frobnicate", term);
-  expect(stack).toHaveLength(0);
-  const dump = lookup(root, "/home/guest/lunad/lunad.core");
-  expect(dump?.kind === "file" && dump.content.includes("dispense_sardine")).toBe(true);
+  await daemon.run("HELLO \\xzz", term);
+  expect(stack).toHaveLength(1);
+  expect(lines.slice(-2).map((l) => l.text)).toEqual(['ERR unknown command "frobnicate". Try HELP.', "ERR bad escape. Write a byte as \\x followed by two hex digits."]);
 });
 
 test("the daemon reconnects after a crash", async () => {
   const { term, stack, daemon, shell } = await openDaemon();
-  await daemon.run("frobnicate", term);
+  await daemon.run(`HELLO ${nameFor(0xdeadbeef)}`, term);
+  await daemon.run("DISPENSE", term);
   expect(stack).toHaveLength(0);
   await shell.run("nc localhost 1337", term);
   expect(stack).toHaveLength(1);
-});
-
-test("the session ends on a wrong HELLO name", async () => {
-  const { term, stack, daemon } = await openDaemon();
-  await daemon.run("HELLO \\xzz", term);
-  expect(stack).toHaveLength(0);
 });

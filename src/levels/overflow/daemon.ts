@@ -1,7 +1,7 @@
 import type { FsNode } from "../../fs/fs.ts";
 import type { Session, TerminalApi } from "../../term/types.ts";
 import { unsealFlag } from "./data.ts";
-import { ADDRESS_KIBBLE, ADDRESS_SARDINE, formatAddress, symbolsText } from "./symbols.ts";
+import { ADDRESS_KIBBLE, ADDRESS_SARDINE, ADDRESS_SERVE_LOOP, formatAddress } from "./symbols.ts";
 
 const NAME_BYTES = 32;
 
@@ -25,19 +25,37 @@ function decodeName(raw: string): Uint8Array | null {
   return new Uint8Array(bytes);
 }
 
-function crashDump(reason: string, detail: string): string {
+const SESSION_ADDRESS = 0xffffd5c0;
+const word = (n: number) => `0x${formatAddress(n)}`;
+
+// The daemon's crash handler runs gdb in batch mode and saves the output, as real services do. Every value is a
+// 32-bit word in the byte order of the machine, so it pastes straight into a pattern offset tool.
+function crashLog(name: Uint8Array, pointer: Uint8Array, eip: number): string {
+  const memory = new Uint8Array(NAME_BYTES + pointer.length);
+  memory.set(name);
+  memory.set(pointer, NAME_BYTES);
+  const view = new DataView(memory.buffer);
+  const words = Array.from({ length: memory.length / 4 }, (_, i) => view.getUint32(i * 4, true));
+  const rows: string[] = [];
+  for (let i = 0; i < words.length; i += 4) {
+    rows.push(`${word(SESSION_ADDRESS + i * 4)}:\t${words.slice(i, i + 4).map(word).join("\t")}`);
+  }
   return [
-    "# lunad.core - crash dump",
-    "# lunad - Luna's dispense daemon",
-    "# signal 11 (SIGSEGV): Segmentation fault",
-    `# cause: ${reason}`,
-    `# detail: ${detail}`,
-    "# Symbol map (leaked by the daemon):",
-    symbolsText(),
+    "lunad: caught SIGSEGV. Backtrace from gdb -batch:",
+    "",
+    "Program received signal SIGSEGV, Segmentation fault.",
+    `${word(eip)} in ?? ()`,
+    "(gdb) bt",
+    `#0  ${word(eip)} in ?? ()`,
+    `#1  ${word(ADDRESS_SERVE_LOOP + 0x3a)} in serve_loop ()`,
+    "(gdb) info registers eip",
+    `eip            ${word(eip)}          ${word(eip)}`,
+    `(gdb) x/${words.length}wx &session`,
+    ...rows,
   ].join("\n") + "\n";
 }
 
-function writeCrashDump(root: FsNode, content: string): void {
+function writeCrashLog(root: FsNode, content: string): void {
   if (root.kind !== "dir") return;
   const home = root.children.home;
   if (home?.kind !== "dir") return;
@@ -49,7 +67,7 @@ function writeCrashDump(root: FsNode, content: string): void {
     guest.children.lunad = lunad;
   }
   if (lunad.kind !== "dir") return;
-  lunad.children["lunad.core"] = { kind: "file", content };
+  lunad.children["crash.log"] = { kind: "file", content };
 }
 
 // The simulated struct: char name[32], then a function pointer. The name copy has no length check, so a name
@@ -60,12 +78,13 @@ export class Daemon implements Session {
   readonly inputHint = "HELLO <name> · DISPENSE · HELP · ctrl+c to leave";
 
   private pointerBytes: Uint8Array;
+  private readonly nameBytes = new Uint8Array(NAME_BYTES);
   private readonly root: FsNode;
 
   constructor(root: FsNode) {
     this.root = root;
-    this.pointerBytes = new Uint8Array(8);
-    new DataView(this.pointerBytes.buffer).setBigUint64(0, ADDRESS_KIBBLE, true);
+    this.pointerBytes = new Uint8Array(4);
+    new DataView(this.pointerBytes.buffer).setUint32(0, ADDRESS_KIBBLE, true);
   }
 
   async run(line: string, term: TerminalApi): Promise<void> {
@@ -77,7 +96,7 @@ export class Daemon implements Session {
     if (verb === "HELP") return this.help(term);
     if (verb === "HELLO") return this.hello(rest, term);
     if (verb === "DISPENSE") return this.dispense(term);
-    return this.crash(term, "unknown command", trimmed);
+    term.print(`ERR unknown command "${verb}". Try HELP.`, "err");
   }
 
   private help(term: TerminalApi): void {
@@ -87,12 +106,14 @@ export class Daemon implements Session {
   }
 
   private hello(rawName: string, term: TerminalApi): void {
-    if (!rawName) return this.crash(term, "HELLO with no name", "HELLO");
+    if (!rawName) return term.print("ERR usage: HELLO <name>", "err");
     const bytes = decodeName(rawName);
-    if (bytes === null) return this.crash(term, "undecodable name", rawName);
+    if (bytes === null) return term.print("ERR bad escape. Write a byte as \\x followed by two hex digits.", "err");
+    this.nameBytes.fill(0);
+    this.nameBytes.set(bytes.subarray(0, NAME_BYTES));
     const overflow = bytes.subarray(NAME_BYTES);
     if (overflow.length) {
-      const over = overflow.subarray(0, 8);
+      const over = overflow.subarray(0, this.pointerBytes.length);
       for (let i = 0; i < over.length; i++) {
         const byte = over[i];
         if (byte !== undefined) this.pointerBytes[i] = byte;
@@ -102,7 +123,7 @@ export class Daemon implements Session {
   }
 
   private async dispense(term: TerminalApi): Promise<void> {
-    const pointer = new DataView(this.pointerBytes.buffer).getBigUint64(0, true);
+    const pointer = new DataView(this.pointerBytes.buffer).getUint32(0, true);
     if (pointer === ADDRESS_SARDINE) {
       term.print("Dispensing: sardine.", "amber");
       term.print(await unsealFlag(), "amber");
@@ -113,12 +134,8 @@ export class Daemon implements Session {
       term.print("(Luna is not impressed. She likes sardines.)", "dim");
       return;
     }
-    return this.crash(term, "call through the pointer", formatAddress(pointer));
-  }
-
-  private crash(term: TerminalApi, reason: string, detail: string): void {
     term.print("Segmentation fault (core dumped)", "err");
-    writeCrashDump(this.root, crashDump(reason, detail));
+    writeCrashLog(this.root, crashLog(this.nameBytes, this.pointerBytes, pointer));
     term.pop();
   }
 }
