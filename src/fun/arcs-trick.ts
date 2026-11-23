@@ -44,6 +44,7 @@ export async function playArcs(term: TerminalApi): Promise<void> {
   const leader = leaderCard();
   scene.append(table, leader);
   term.printNode(scene);
+  term.holdView();
 
   for (const [i, play] of PLAYS.entries()) {
     await term.sleep(i ? CARD_MS : 300);

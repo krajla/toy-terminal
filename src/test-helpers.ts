@@ -63,6 +63,7 @@ export function fakeTerm() {
     },
     sleep: async () => {},
     effect: () => {},
+    holdView: () => {},
     clear: () => void (lines.length = 0),
     push: (s) => void stack.push(s),
     pop: () => void stack.pop(),

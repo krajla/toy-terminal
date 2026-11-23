@@ -74,6 +74,7 @@ export async function zoomToFactionSheet(term: TerminalApi): Promise<void> {
   overlay.append(rect, ...lines);
   box.append(world, sheet, overlay);
   term.printNode(box);
+  term.holdView();
 
   const corners = (x: number, y: number, w: number, h: number) => [
     [x, y, 0, 0],

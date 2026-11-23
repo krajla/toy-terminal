@@ -10,6 +10,7 @@ export interface TerminalElements {
 }
 
 const POSSESSED_STEP = 3;
+const PIN_MARGIN = 8;
 
 function partElement({ text, cls, href, img }: Part): HTMLElement {
   if (img) {
@@ -37,6 +38,8 @@ export class Terminal implements TerminalApi {
   private possessed: string | undefined;
   private possessedKeys = 0;
   private abort = new AbortController();
+  private commandRow: Element | null = null;
+  private pinned: Element | null = null;
 
   constructor(
     private readonly el: TerminalElements,
@@ -45,6 +48,7 @@ export class Terminal implements TerminalApi {
     this.sessions.push(root);
     el.input.addEventListener("keydown", (e) => this.onKey(e));
     el.input.addEventListener("input", () => {
+      this.unpin();
       if (!this.possessed) return;
       // Each key types POSSESSED_STEP characters of the song, and each backspace takes them back.
       const shown = this.possessed.slice(0, this.possessedKeys * POSSESSED_STEP);
@@ -154,6 +158,12 @@ export class Terminal implements TerminalApi {
 
   clear(): void {
     this.el.out.replaceChildren();
+    this.pinned = null;
+  }
+
+  holdView(): void {
+    this.pinned = this.commandRow;
+    this.scroll();
   }
 
   push(session: Session): void {
@@ -208,7 +218,19 @@ export class Terminal implements TerminalApi {
   }
 
   private scroll(): void {
-    this.el.screen.scrollTop = this.el.screen.scrollHeight;
+    const { screen } = this.el;
+    let top = screen.scrollHeight;
+    if (this.pinned?.isConnected) {
+      const offset = this.pinned.getBoundingClientRect().top - screen.getBoundingClientRect().top;
+      top = Math.min(top, screen.scrollTop + offset - PIN_MARGIN);
+    }
+    screen.scrollTop = top;
+  }
+
+  private unpin(): void {
+    if (!this.pinned) return;
+    this.pinned = null;
+    this.scroll();
   }
 
   private setInput(value: string): void {
@@ -272,7 +294,9 @@ export class Terminal implements TerminalApi {
 
   private async submit(line: string): Promise<void> {
     const session = this.session;
+    this.pinned = null;
     this.printParts([...this.promptParts(session), { text: line }]);
+    this.commandRow = this.el.out.lastElementChild;
     this.currentHistory.add(line);
     this.setInput("");
     this.busy = true;

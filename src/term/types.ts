@@ -34,6 +34,8 @@ export interface TerminalApi extends Output {
   /** Rejects with Interrupted when the player presses Ctrl+C. */
   sleep(ms: number): Promise<void>;
   effect(cls: string, ms: number): void;
+  /** Keeps the line of the running command at the top of the view, so a tall animation stays in sight. Typing ends it. */
+  holdView(): void;
 }
 
 export interface Completion {
