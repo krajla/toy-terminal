@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "icons": "bun run scripts/icons.ts",
     "lint": "oxlint --type-aware --deny-warnings",
-    "deploy": "bun run build && cf deploy dist"
+    "deploy": "bun run build && cf deploy dist",
+    "favicon": "bun run scripts/favicon.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.4.5",
