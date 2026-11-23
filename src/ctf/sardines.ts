@@ -18,6 +18,8 @@ export const SARDINES: Sardine[] = [
   { id: "header", name: "the header", tier: "easy", sha256: "28f86bc63437eb4b4047fceeb8ccf2496eacc8ebc4870f58dc9863ed9a6430cc" },
   { id: "sqlite", name: "the stash", tier: "medium", sha256: "00f48718cd820713099db9122a3b849cf8e69803048c0139112ebde439aa11c5" },
   { id: "case-file", name: "the case file", tier: "medium", sha256: "d4eb96378ad70483fd68ab4e870d0e8b4e2be011aae6948e468e9eba4d0574ef" },
+  // This flag sits in the public git history of the site, in a commit that a later commit reverts.
+  { id: "git-history", name: "the leaked key", tier: "hard", sha256: "2115da2f24f39c5b76576ed31eadf6d87e3f046c6e0b1b3495b8a6ec6dfa53d6" },
 ];
 
 export async function sha256Hex(text: string): Promise<string> {
