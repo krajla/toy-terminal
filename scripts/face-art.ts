@@ -20,7 +20,7 @@ async function grey(file: string, crop: Crop, cols: number, rows: number) {
 }
 
 function stretch(values: number[]): (v: number) => number {
-  const sorted = [...values].sort((a, b) => a - b);
+  const sorted = values.toSorted((a, b) => a - b);
   const low = sorted[Math.floor(sorted.length * 0.05)] ?? 0;
   const high = sorted[Math.floor(sorted.length * 0.95)] ?? 1;
   return (v) => (v - low) / (high - low);
@@ -51,8 +51,8 @@ async function sandwormFace(): Promise<string[]> {
     return undefined;
   };
 
-  return Array.from({ length: rows }, (_, y) =>
-    Array.from({ length: cols }, (_, x) => {
+  return Array.from({ length: rows }, (_row, y) =>
+    Array.from({ length: cols }, (_col, x) => {
       const raw = values[y * cols + x] ?? 0;
       return raw > wall ? " " : (eyeAt(x, y) ?? dots(level(raw)));
     })

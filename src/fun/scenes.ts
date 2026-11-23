@@ -161,7 +161,8 @@ export const sandworm: Overlay = (grid, t) => {
     });
   });
 
-  for (let k = 0; rise < 1 && k < 60; k++) {
+  if (rise >= 1) return;
+  for (let k = 0; k < 60; k++) {
     const col = Math.round(WORM_X + FACE_W / 2 + Math.sin(k * 12.9898 + t * 7) * 26);
     const row = Math.round(WORM_BASE - 1 - (Math.sin(k * 78.233 + t * 5) * 0.5 + 0.5) * 9 * (1 - rise));
     put(grid, row, col, k % 3 ? "·" : "•");

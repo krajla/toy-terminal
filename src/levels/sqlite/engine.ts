@@ -125,12 +125,14 @@ const KEYWORDS = new Set([
 
 class Parser {
   private i = 0;
+  private readonly end: Token;
 
-  constructor(private readonly tokens: Token[]) {}
+  constructor(private readonly tokens: Token[]) {
+    this.end = tokens.at(-1) ?? { kind: "end", text: "", at: 0 };
+  }
 
   private get tok(): Token {
-    // tokenize() always ends the list with an "end" token, and the parser never moves past it.
-    return this.tokens[Math.min(this.i, this.tokens.length - 1)] as Token;
+    return this.tokens[this.i] ?? this.end;
   }
 
   private isWord(word: string): boolean {
@@ -341,7 +343,7 @@ class Parser {
       }
       return { kind: "column", name: tok.text, at: tok.at };
     }
-    this.fail();
+    return this.fail();
   }
 }
 
@@ -409,6 +411,10 @@ function evaluate(expr: Expr, row: Record<string, Value>): Value {
         }
       }
     }
+    default: {
+      const unhandled: never = expr;
+      throw new Error(`unhandled expression ${JSON.stringify(unhandled)}`);
+    }
   }
 }
 
@@ -450,7 +456,7 @@ export function execute(db: Database, sql: string): ResultSet {
     const { expr, desc } = query.orderBy;
     const index = expr.kind === "literal" && typeof expr.value === "number" ? expr.value - 1 : expr.kind === "column" ? first.columns.findIndex((c) => c.toLowerCase() === expr.name.toLowerCase()) : -1;
     if (index < 0 || index >= first.columns.length) throw new SqlError("ORDER BY term does not match any column in the result set", 0);
-    rows = [...rows].sort((a, b) => compare(a[index] ?? null, b[index] ?? null) * (desc ? -1 : 1));
+    rows = rows.toSorted((a, b) => compare(a[index] ?? null, b[index] ?? null) * (desc ? -1 : 1));
   }
   if (query.limit !== undefined) rows = rows.slice(0, query.limit);
   return { columns: first.columns, rows };

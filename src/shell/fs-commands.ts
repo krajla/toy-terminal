@@ -23,7 +23,7 @@ export const ls: Command = {
       if (paths.length > 1) term.print(`${path}:`);
       const cells: Cell[] = Object.entries(node.children)
         .filter(([name]) => all || !name.startsWith("."))
-        .sort(([a], [b]) => a.replace(/^\./, "").localeCompare(b.replace(/^\./, "")))
+        .toSorted(([a], [b]) => a.replace(/^\./, "").localeCompare(b.replace(/^\./, "")))
         .map(([name, child]) => (child.kind === "dir" ? { text: `${name}/`, cls: "blue" } : { text: name }));
       if (all) cells.unshift({ text: "./", cls: "blue" }, { text: "../", cls: "blue" });
       if (cells.length) term.printColumns(cells);

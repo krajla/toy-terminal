@@ -7,12 +7,14 @@ import { ALL_COMMANDS } from "./shell/commands.ts";
 import { Shell } from "./shell/shell.ts";
 import { Terminal } from "./term/terminal.ts";
 
-function byId<T extends HTMLElement>(id: string): T {
+function byId(id: string): HTMLElement {
   const el = document.getElementById(id);
   if (!el) throw new Error(`missing #${id}`);
-  // index.html declares each id with the element type that its caller asks for.
-  return el as T;
+  return el;
 }
+
+const input = byId("in");
+if (!(input instanceof HTMLInputElement)) throw new Error("#in must be an <input>");
 
 const term = new Terminal(
   {
@@ -20,7 +22,7 @@ const term = new Terminal(
     out: byId("out"),
     line: byId("line"),
     prompt: byId("prompt"),
-    input: byId<HTMLInputElement>("in"),
+    input,
   },
   new Shell(ALL_COMMANDS, ROOT, new Progress(), new YellowMark()),
 );

@@ -38,7 +38,10 @@ export class Terminal implements TerminalApi {
   private possessedKeys = 0;
   private abort = new AbortController();
 
-  constructor(private readonly el: TerminalElements, root: Session) {
+  constructor(
+    private readonly el: TerminalElements,
+    private readonly root: Session,
+  ) {
     this.sessions.push(root);
     el.input.addEventListener("keydown", (e) => this.onKey(e));
     el.input.addEventListener("input", () => {
@@ -172,8 +175,7 @@ export class Terminal implements TerminalApi {
   }
 
   private get session(): Session {
-    // The root session is pushed in the constructor and pop() never removes it.
-    return this.sessions.at(-1) as Session;
+    return this.sessions.at(-1) ?? this.root;
   }
 
   private promptParts(session: Session): Part[] {

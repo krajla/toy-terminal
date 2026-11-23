@@ -46,7 +46,7 @@ export class Shell implements Session {
   }
 
   visible(): Command[] {
-    return [...this.commands.values()].filter((c) => !c.hidden).sort((a, b) => a.name.localeCompare(b.name));
+    return [...this.commands.values()].filter((c) => !c.hidden).toSorted((a, b) => a.name.localeCompare(b.name));
   }
 
   // The marked sing Cassilda's Song: the first input line after a reload, then every eighth one, types the

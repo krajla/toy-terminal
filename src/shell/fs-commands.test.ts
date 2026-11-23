@@ -58,7 +58,7 @@ test("cat prints files and reports directories and missing files", async () => {
 });
 
 test("path completion hides dotfiles until the word starts with a dot", () => {
-  expect(completePath(ROOT, "/home/guest", "").sort()).toEqual(["box/", "notes.txt"]);
+  expect(completePath(ROOT, "/home/guest", "").toSorted()).toEqual(["box/", "notes.txt"]);
   expect(completePath(ROOT, "/home/guest", ".")).toContain(".secret");
   const shell = makeShell(FS_COMMANDS, ROOT);
   expect(shell.complete("cd b").line).toBe("cd box/");

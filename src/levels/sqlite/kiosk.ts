@@ -3,7 +3,7 @@ import type { Completion, Session, TerminalApi } from "../../term/types.ts";
 import { execute, formatError, SQLITE_VERSION, SqlError, type Database, type ResultSet } from "./engine.ts";
 
 const DOT_COMMANDS = [".help", ".treat", ".quit", ".exit"];
-const LOCKED = [".tables", ".schema", ".dump", ".databases", ".open", ".read", ".shell", ".system", ".mode"];
+const LOCKED = new Set([".tables", ".schema", ".dump", ".databases", ".open", ".read", ".shell", ".system", ".mode"]);
 
 // The kiosk claims each lookup is parameterised. It is not: it pastes the player's text into the query.
 export function treatQuery(name: string): string {
@@ -52,7 +52,7 @@ export class Kiosk implements Session {
       }
       return;
     }
-    if (LOCKED.includes(word)) return term.print(`Error: ${word} is disabled in kiosk mode. Luna is watching.`, "err");
+    if (LOCKED.has(word)) return term.print(`Error: ${word} is disabled in kiosk mode. Luna is watching.`, "err");
     if (word.startsWith(".")) {
       return term.print(`Error: unknown command or invalid arguments:  "${word.slice(1)}". Enter ".help" for help`, "err");
     }

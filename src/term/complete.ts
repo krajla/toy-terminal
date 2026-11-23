@@ -1,5 +1,5 @@
 export function completeWord(word: string, candidates: readonly string[]): { word: string; matches: string[] } {
-  const matches = candidates.filter((c) => c.startsWith(word)).sort();
+  const matches = candidates.filter((c) => c.startsWith(word)).toSorted();
   const [first] = matches;
   if (first === undefined) return { word, matches };
   if (matches.length === 1) return { word: first.endsWith("/") ? first : `${first} `, matches };

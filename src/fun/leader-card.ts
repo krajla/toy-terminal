@@ -11,7 +11,6 @@ const ABILITIES: Ability[] = [
   { name: "Knocks Things Over.", text: "At the end of each round, remove 1 ship. Not from the board. From the table." },
 ];
 const SETUP = ["A: 1 sofa", "B: 2 ships", "C: 9 lives"];
-const RESOURCES = "Psionic, Relic";
 
 function el(tag: string, cls: string, text?: string): HTMLElement {
   const node = document.createElement(tag);
