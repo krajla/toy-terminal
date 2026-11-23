@@ -1,4 +1,5 @@
 import lunaWasHere from "./home/luna_was_here.txt" with { type: "text" };
+import lunaDb from "./home/luna.db.txt" with { type: "text" };
 import welcome from "./home/welcome.txt" with { type: "text" };
 import type { FsNode } from "./fs.ts";
 
@@ -9,6 +10,7 @@ export const ROOT: FsNode = dir({
   home: dir({
     guest: dir({
       "welcome.txt": file(welcome),
+      "luna.db": file(lunaDb),
       ".luna_was_here": file(lunaWasHere),
     }),
   }),

@@ -228,6 +228,12 @@ export class Terminal implements TerminalApi {
     } else if (e.key === "Tab") {
       e.preventDefault();
       this.complete();
+    } else if (e.ctrlKey && e.key === "d") {
+      // Like a real shell: Ctrl+D on an empty line ends a sub-session, such as the sqlite kiosk.
+      e.preventDefault();
+      if (input.value || this.sessions.length < 2) return;
+      this.printParts([...this.promptParts(this.session)]);
+      this.pop();
     } else if (e.ctrlKey && e.key === "l") {
       e.preventDefault();
       this.clear();

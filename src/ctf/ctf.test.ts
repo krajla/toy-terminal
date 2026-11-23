@@ -76,3 +76,17 @@ test("progress survives a reload and ignores broken or failing storage", () => {
   progress.add("welcome");
   expect(progress.has("welcome")).toBe(true);
 });
+
+// Medium and hard flags must never sit in plain text in the source or the static files.
+test("only the easy flags appear in plain text in src/ and public/", async () => {
+  const glob = new Bun.Glob("{src,public}/**/*.{ts,txt,html,json}");
+  const plain = new Set<string>();
+  for await (const path of glob.scan(ROOT)) {
+    if (path.endsWith(".test.ts")) continue;
+    for (const flag of (await Bun.file(join(ROOT, path)).text()).match(FLAG) ?? []) plain.add(flag);
+  }
+  const headers = (await Bun.file(join(ROOT, "public/_headers")).text()).match(FLAG) ?? [];
+  for (const flag of headers) plain.add(flag);
+  const easy = new Set(SARDINES.filter((s) => s.tier === "easy").map((s) => s.sha256));
+  for (const flag of plain) expect([flag, easy.has(await sha256Hex(flag))]).toEqual([flag, true]);
+});

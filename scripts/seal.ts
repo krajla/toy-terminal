@@ -1,0 +1,12 @@
+// Seals each line of stdin with a phrase: bun scripts/seal.ts <phrase> < secrets.txt
+// Prints the sealed text, and the SHA-256 of each line that is a flag, for src/ctf/sardines.ts.
+import { seal } from "../src/ctf/seal.ts";
+
+const phrase = process.argv[2];
+if (!phrase) throw new Error("usage: bun scripts/seal.ts <phrase> < lines");
+for await (const line of console) {
+  const text = line.trimEnd();
+  if (!text) continue;
+  const flag = text.startsWith("sardine{") ? `  sha256 ${new Bun.CryptoHasher("sha256").update(text).digest("hex")}` : "";
+  console.log(`${await seal(text, phrase)}${flag}`);
+}

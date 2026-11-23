@@ -1,0 +1,2 @@
+SQLite format 3^@^P^@^A^A^@@  ^@^@^@^G^@^@^@^E^@^@^@^@^@^@^@^@^@^@^@^D^@^@^@^D
+(Luna sat on the rest of this binary file. Open it with: sqlite luna.db)

@@ -4,6 +4,7 @@ import { FS_COMMANDS } from "./fs-commands.ts";
 import { LUNA_COMMANDS } from "./luna-commands.ts";
 import type { Command } from "./shell.ts";
 import { TOY_COMMANDS } from "./toy-commands.ts";
+import { sqlite, sqlite3 } from "../levels/sqlite/command.ts";
 
 export const help: Command = {
   name: "help",
@@ -34,7 +35,7 @@ export const echo: Command = {
 };
 
 // Robert's old session. Later levels add their hints here.
-const ROBERTS_HISTORY = ["ls -a", "cat .luna_was_here", "vim .luna_was_here", "feed luna", "feed luna", "man luna", "sudo feed luna", "play ark-nova", "roll 2d6", "clear"];
+const ROBERTS_HISTORY = ["ls -a", "cat .luna_was_here", "vim .luna_was_here", "feed luna", "feed luna", "man luna", "sudo feed luna", "play ark-nova", "roll 2d6", "sqlite luna.db", "clear"];
 
 export const history: Command = {
   name: "history",
@@ -54,4 +55,6 @@ export const ALL_COMMANDS: Command[] = [
   ...ABOUT_COMMANDS,
   ...LUNA_COMMANDS,
   ...TOY_COMMANDS,
+  sqlite,
+  sqlite3,
 ];
