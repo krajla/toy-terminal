@@ -220,6 +220,11 @@ export class Terminal implements TerminalApi {
   private onKey(e: KeyboardEvent): void {
     if (this.busy) return;
     const { input } = this.el;
+    // A possessed line must be typed out, key by key. History and completion would skip the song.
+    if (this.possessed && (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Tab")) {
+      e.preventDefault();
+      return;
+    }
 
     if (e.key === "Enter") {
       e.preventDefault();
