@@ -1,13 +1,12 @@
 import { drawDice } from "../fun/dice-art.ts";
 import { EMBLEMS, icon } from "../fun/emblems.ts";
 import { playScene } from "../fun/scenes.ts";
-import { FORTUNES } from "../fun/fortunes.ts";
+import { nextFortune } from "../fun/fortunes.ts";
 import { PARTY, partyMember, roll as rollDice } from "../fun/roll.ts";
 import { LUNA_PHOTOS, photo } from "../luna.ts";
 import type { TerminalApi } from "../term/types.ts";
 import type { Command } from "./shell.ts";
 
-const randomItem = <T>(items: readonly T[]): T | undefined => items[Math.floor(Math.random() * items.length)];
 const hidden = (c: Omit<Command, "hidden">): Command => ({ ...c, hidden: true });
 
 function show(term: TerminalApi, name: string): void {
@@ -19,7 +18,7 @@ export const fortune: Command = {
   name: "fortune",
   summary: "a fortune from Luna",
   run(_args, term) {
-    term.print(randomItem(FORTUNES) ?? "");
+    term.print(nextFortune());
   },
 };
 

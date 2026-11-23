@@ -76,3 +76,12 @@ test("unmask without the mark changes nothing", async () => {
   await shell.run("unmask", term);
   expect(lines.map((l) => l.text)).toEqual(['"I wear no mask."']);
 });
+
+test("two marked rolls in a row never quote the same lines", () => {
+  const quoted = ["d20", "d20"].map((spec) => {
+    const r = roll(spec, () => 0.3, { marked: true });
+    if (typeof r === "string") throw new Error(r);
+    return r.lines.filter((l) => KING_LINES.has(l)).join("\n");
+  });
+  expect(quoted[0]).not.toBe(quoted[1]);
+});

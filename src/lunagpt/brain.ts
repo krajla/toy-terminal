@@ -232,6 +232,7 @@ const ASKS_FOR_COUNT = /\b(how many|progress|score|count)\b/;
 export class LunaBrain {
   private readonly counts = new Map<string, number>();
   private readonly bags = new Map<string, number[]>();
+  private readonly lastPicked = new Map<string, number>();
   private readonly hintLevels = new Map<string, number>();
   private misses = 0;
   private leaked = false;
@@ -323,8 +324,12 @@ export class LunaBrain {
         const j = Math.floor(this.rng() * (i + 1));
         [bag[i], bag[j]] = [bag[j] ?? 0, bag[i] ?? 0];
       }
+      // A new bag must not start with the reply that ended the last one.
+      if (bag.length > 1 && bag.at(-1) === this.lastPicked.get(key)) [bag[0], bag[bag.length - 1]] = [bag.at(-1) ?? 0, bag[0] ?? 0];
       this.bags.set(key, bag);
     }
-    return bag.pop() ?? 0;
+    const index = bag.pop() ?? 0;
+    this.lastPicked.set(key, index);
+    return index;
   }
 }

@@ -1,14 +1,14 @@
 import { catsay as drawCatsay } from "../fun/catsay.ts";
 import { feed as feedLuna, isMealTime } from "../fun/feeding.ts";
-import { FORTUNES } from "../fun/fortunes.ts";
+import { nextFortune } from "../fun/fortunes.ts";
 import { zoomToFactionSheet } from "../fun/galaxy-zoom.ts";
 import { leaderCard } from "../fun/leader-card.ts";
 import { playScene, sandworm } from "../fun/scenes.ts";
 import { clip, LUNA_PHOTOS, photo, PLAY_CLIP, POSES, type LunaPhoto } from "../luna.ts";
 import type { TerminalApi } from "../term/types.ts";
+import { freshPicker, randomItem } from "../fun/random.ts";
 import type { Command } from "./shell.ts";
 
-const randomItem = <T>(items: readonly T[]): T | undefined => items[Math.floor(Math.random() * items.length)];
 
 function show(term: TerminalApi, name: string): void {
   const p: LunaPhoto | undefined = LUNA_PHOTOS.find((x) => x.name === name);
@@ -20,7 +20,7 @@ export const luna: Command = {
   summary: "summon the cat",
   run(args, term) {
     const wanted = args[0];
-    const pick = wanted ? POSES.find((p) => p.name === wanted) : randomItem(POSES);
+    const pick = wanted ? POSES.find((p) => p.name === wanted) : nextPose();
     if (!pick) return term.print(`luna: no such pose: ${wanted}`, "err");
     term.printNode(photo(pick));
     term.print(pick.caption, "dim");
@@ -144,6 +144,8 @@ const PETS = [
   [ANGRY, "Luna looks at your hand, then at you.", "She walks away. You will think about this tonight."],
 ] as const;
 
+const nextPose = freshPicker(POSES);
+
 export const pet: Command = {
   name: "pet",
   summary: "pet someone",
@@ -163,7 +165,7 @@ export const catsay: Command = {
   summary: "Luna says a thing",
   hidden: true,
   run(args, term) {
-    term.print(drawCatsay(args.length ? args.join(" ") : (randomItem(FORTUNES) ?? "meow")));
+    term.print(drawCatsay(args.length ? args.join(" ") : nextFortune()));
   },
 };
 

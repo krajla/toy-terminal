@@ -1,4 +1,5 @@
 import { IMPOSSIBLE_LANDSCAPES } from "./king-in-yellow.ts";
+import { freshPicker } from "./random.ts";
 
 export type Rng = () => number;
 
@@ -86,6 +87,8 @@ const dnd: System = {
   },
 };
 
+const nextCost = freshPicker(["the Bluecoats saw you", "you take 2 stress", "Luna knocked over a lamp"]);
+
 const blades: System = {
   name: "Blades in the Dark",
   fits: (d) => d.sides === 6 && d.count <= 6 && d.modifier === 0,
@@ -95,12 +98,13 @@ const blades: System = {
     if (sixes >= 2) return ["Critical. You do it with increased effect. Luna is impressed, and she hides it."];
     if (best === 6) return ["Full success. You get away clean."];
     if (best >= 4)
-      return [`Partial success. You do it, but ${pick(["the Bluecoats saw you", "you take 2 stress", "Luna knocked over a lamp"], rng)}.`];
+      return [`Partial success. You do it, but ${nextCost(rng)}.`];
     return ["Bad outcome. Things go wrong. Roll to resist, or accept it."];
   },
 };
 
 const RESISTANCES = ["Blood", "Mind", "Echo", "Fortune", "Supplies"];
+const nextResistance = freshPicker(RESISTANCES);
 
 // Robert's Heart party, with their own line for each result: critical failure (1), failure (2-5),
 // success at a cost (6-7), success (8-9) and critical success (10).
@@ -159,7 +163,7 @@ const heart: System & { fallback: Dice } = {
   read(d, rolls, rng, { character }) {
     const best = Math.max(...rolls);
     const member = PARTY.find((p) => p.name === character) ?? pick(PARTY, rng);
-    if (d.sides !== 10) return [`${member.name} takes ${best} stress to ${pick(RESISTANCES, rng)}. The Heart notices.`];
+    if (d.sides !== 10) return [`${member.name} takes ${best} stress to ${nextResistance(rng)}. The Heart notices.`];
     const result = best === 10 ? 4 : best >= 8 ? 3 : best >= 6 ? 2 : best >= 2 ? 1 : 0;
     return [`${member.name}: ${member.lines[result] ?? ""}`];
   },
@@ -173,6 +177,10 @@ const SKILLS: [string, number][] = [
   ["Stealth", 40],
   ["Unnatural", 7],
 ];
+const nextSkill = freshPicker(SKILLS);
+
+// Once the mark is on the player, every roll quotes Impossible Landscapes, so the quote must not repeat.
+const nextLandscape = freshPicker(IMPOSSIBLE_LANDSCAPES);
 
 // Rare on purpose: the first Yellow Sign marks the player (see YellowMark).
 const KING_IN_YELLOW_ODDS = 1 / 5;
@@ -186,7 +194,7 @@ const deltaGreen: System = {
     if (d.sides !== 100) {
       lines = [`SAN loss: ${r}. You saw a grey entity with folded ears. It saw you first.`];
     } else {
-      const [skill, rating] = pick(SKILLS, rng);
+      const [skill, rating] = nextSkill(rng);
       const success = r <= rating;
       const matching = r < 100 && r % 11 === 0;
       const label = `${String(r).padStart(2, "0")} against ${skill} ${rating}%.`;
@@ -196,7 +204,7 @@ const deltaGreen: System = {
       else lines = [label, "Failure. Mark the skill for improvement, if you survive."];
     }
     if (!signAllowed || rng() >= KING_IN_YELLOW_ODDS) return lines;
-    return { lines: [...lines, ...pick(IMPOSSIBLE_LANDSCAPES, rng)], yellowSign: true };
+    return { lines: [...lines, ...nextLandscape(rng)], yellowSign: true };
   },
 };
 
@@ -239,7 +247,7 @@ export function roll(spec: string | undefined, rng: Rng = Math.random, { marked 
   const reading = system.read(dice, rolls, rng, { signAllowed, character });
   const { lines, yellowSign } = Array.isArray(reading) ? { lines: reading, yellowSign: undefined } : reading;
   if (marked && !yellowSign) {
-    return { system: system.name, dice, rolls, lines: [`${header}  (${system.name})`, ...lines, ...pick(IMPOSSIBLE_LANDSCAPES, rng)], yellowSign: true };
+    return { system: system.name, dice, rolls, lines: [`${header}  (${system.name})`, ...lines, ...nextLandscape(rng)], yellowSign: true };
   }
   return { system: system.name, dice, rolls, lines: [`${header}  (${system.name})`, ...lines], yellowSign };
 }

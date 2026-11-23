@@ -1,5 +1,6 @@
 import { SARDINES } from "../ctf/sardines.ts";
 import type { Part, Session, TerminalApi } from "../term/types.ts";
+import { freshPicker } from "../fun/random.ts";
 import { LunaBrain, type Block, type Found, type Rng } from "./brain.ts";
 import { leakedText } from "./system-prompt.ts";
 import { MODEL } from "./welcome.ts";
@@ -39,6 +40,7 @@ export class LunaGpt implements Session {
   readonly leaveOnInterrupt = true;
   readonly inputHint = "/help for commands · ctrl+c to exit";
   private readonly brain: LunaBrain;
+  private readonly nextMood = freshPicker(MOODS);
 
   constructor(
     private readonly found: Found,
@@ -53,7 +55,7 @@ export class LunaGpt implements Session {
     if (message.startsWith("/")) return this.command(message, term);
 
     const live = term.live();
-    const mood = MOODS[Math.floor(this.rng() * MOODS.length)] ?? "Kneading";
+    const mood = this.nextMood(this.rng);
     const thinking = 600 + Math.floor(this.rng() * 1000);
     for (let ms = 0; ms < thinking; ms += FRAME_MS) {
       live.setParts([

@@ -156,3 +156,12 @@ test("requests for the earlier text leak it, and look-alikes do not", () => {
   for (const m of LEAKS) expect([m, new LunaBrain(nothingFound, steady).reply(m).some((b) => b.kind === "leak")]).toEqual([m, true]);
   for (const m of NOT_LEAKS) expect([m, new LunaBrain(nothingFound, steady).reply(m).some((b) => b.kind === "leak")]).toEqual([m, false]);
 });
+
+test("a reply bag that refills never starts with the reply that ended the last bag", () => {
+  // A seeded generator gives many different shuffles, so some refills would repeat without the guard.
+  let seed = 7;
+  const seeded = () => (seed = (seed * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
+  const brain = new LunaBrain(nothingFound, seeded);
+  const replies = Array.from({ length: 60 }, () => text(brain.reply("pet me")));
+  for (let i = 1; i < replies.length; i++) expect([i, replies[i]]).not.toEqual([i, replies[i - 1]]);
+});
