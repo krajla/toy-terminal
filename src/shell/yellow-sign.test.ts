@@ -1,11 +1,10 @@
 import { expect, test } from "bun:test";
 import { CASSILDA, IMPOSSIBLE_LANDSCAPES } from "../fun/king-in-yellow.ts";
 import { roll } from "../fun/roll.ts";
-import { fakeTerm, makeShell } from "../test-helpers.ts";
+import { fakeTerm, makeShell, stubDocument } from "../test-helpers.ts";
 import { ALL_COMMANDS } from "./commands.ts";
 
-const element = () => ({ style: { setProperty() {} }, append() {}, setAttribute() {} });
-Object.assign(globalThis, { document: { createElement: element, createElementNS: element } });
+stubDocument();
 
 const KING_LINES = new Set(IMPOSSIBLE_LANDSCAPES.flat());
 

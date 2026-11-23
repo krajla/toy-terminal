@@ -1,11 +1,9 @@
 import { expect, test } from "bun:test";
 import { ROOT } from "../fs/tree.ts";
-import { fakeTerm, makeShell } from "../test-helpers.ts";
+import { fakeTerm, makeShell, stubDocument } from "../test-helpers.ts";
 import { ALL_COMMANDS } from "./commands.ts";
 
-// Commands that show a photo or a clip build DOM elements. This stub has the parts they touch.
-const element = () => ({ style: { setProperty() {} }, append() {}, setAttribute() {} });
-Object.assign(globalThis, { document: { createElement: element, createElementNS: element } });
+stubDocument();
 
 test("command names are unique", () => {
   const names = ALL_COMMANDS.map((c) => c.name);

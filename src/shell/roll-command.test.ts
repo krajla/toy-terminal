@@ -1,10 +1,9 @@
 import { expect, test } from "bun:test";
 import { PARTY } from "../fun/roll.ts";
-import { fakeTerm, makeShell } from "../test-helpers.ts";
+import { fakeTerm, makeShell, stubDocument } from "../test-helpers.ts";
 import { ALL_COMMANDS } from "./commands.ts";
 
-const element = () => ({ style: { setProperty() {} }, append() {}, setAttribute() {} });
-Object.assign(globalThis, { document: { createElement: element, createElementNS: element } });
+stubDocument();
 
 const speaker = (text: string) => PARTY.find((p) => text.startsWith(`${p.name}:`))?.name;
 

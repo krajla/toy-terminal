@@ -1,7 +1,9 @@
 import { expect, test } from "bun:test";
 import { completePath, displayPath, resolve, type FsNode } from "../fs/fs.ts";
-import { fakeTerm, makeShell } from "../test-helpers.ts";
+import { fakeTerm, makeShell, stubDocument } from "../test-helpers.ts";
 import { FS_COMMANDS } from "./fs-commands.ts";
+
+stubDocument();
 
 const ROOT: FsNode = {
   kind: "dir",
@@ -34,7 +36,7 @@ test("ls hides dotfiles unless -a is given", async () => {
   const { term, lines } = fakeTerm();
   const shell = makeShell(FS_COMMANDS, ROOT);
   await shell.run("ls", term);
-  await shell.run("ls -la", term);
+  await shell.run("ls -a", term);
   expect(lines.map((l) => l.text)).toEqual(["box/ notes.txt", "./ ../ box/ notes.txt .secret"]);
 });
 
@@ -63,4 +65,44 @@ test("path completion hides dotfiles until the word starts with a dot", () => {
   const shell = makeShell(FS_COMMANDS, ROOT);
   expect(shell.complete("cd b").line).toBe("cd box/");
   expect(shell.complete("cat ~/n").line).toBe("cat ~/notes.txt ");
+});
+
+const PICTURES: FsNode = {
+  kind: "dir",
+  children: {
+    "a.png": { kind: "image", photo: { name: "a", caption: "A cat.", width: 1, height: 1 }, size: 12345 },
+    "notes.txt": { kind: "file", content: "héllo\n" },
+    sub: { kind: "dir", children: {} },
+  },
+};
+
+test("ls -l shows the byte size of each entry", async () => {
+  const { term, lines } = fakeTerm();
+  const shell = makeShell(FS_COMMANDS, PICTURES);
+  shell.cwd = "/";
+  await shell.run("ls -l", term);
+  await shell.run("ls -l notes.txt", term);
+  expect(lines.map((l) => l.text)).toEqual([
+    "-rw-r--r-- 1 guest guest 12345 Nov 21 21:34 a.png",
+    "-rw-r--r-- 1 guest guest     7 Nov 21 21:34 notes.txt",
+    "drwxr-xr-x 1 guest guest  4096 Nov 21 21:34 sub/",
+    "-rw-r--r-- 1 guest guest 7 Nov 21 21:34 notes.txt",
+  ]);
+});
+
+test("view shows a picture with its download link and rejects other files", async () => {
+  const { term, lines } = fakeTerm();
+  const shell = makeShell(FS_COMMANDS, PICTURES);
+  shell.cwd = "/";
+  await shell.run("view a.png", term);
+  await shell.run("view notes.txt", term);
+  await shell.run("cat a.png", term);
+  await shell.run("view", term);
+  expect(lines.map((l) => l.text)).toEqual([
+    "A cat.",
+    "download: /luna/a.png",
+    "view: notes.txt: not a picture",
+    "cat: a.png: binary file, try view",
+    "usage: view <picture>",
+  ]);
 });

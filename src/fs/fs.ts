@@ -1,4 +1,9 @@
-export type FsNode = { kind: "dir"; children: Record<string, FsNode> } | { kind: "file"; content: string };
+import type { LunaPhoto } from "../luna.ts";
+
+export type FsNode =
+  | { kind: "dir"; children: Record<string, FsNode> }
+  | { kind: "file"; content: string }
+  | { kind: "image"; photo: LunaPhoto; size: number };
 
 export const HOME = "/home/guest";
 

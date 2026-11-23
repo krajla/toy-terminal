@@ -4,6 +4,13 @@ import type { FsNode } from "./fs/fs.ts";
 import { Shell, type Command } from "./shell/shell.ts";
 import type { Session, TerminalApi } from "./term/types.ts";
 
+const element = () => ({ style: { setProperty() {} }, append() {}, setAttribute() {} });
+
+// Commands that show a photo or a clip build DOM elements. This stub has the parts they touch.
+export function stubDocument() {
+  Object.assign(globalThis, { document: { createElement: element, createElementNS: element } });
+}
+
 export function memoryStore() {
   const data = new Map<string, string>();
   return {

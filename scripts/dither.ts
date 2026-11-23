@@ -13,7 +13,7 @@ interface Source {
   crop?: { left: number; top: number; width: number; height: number };
 }
 
-// Crops keep people, a foot, and the box-lid portrait of the Ark Nova designer out of frame.
+// Crops keep people, clothes, a foot, and the box-lid portrait of the Ark Nova designer out of frame.
 const SOURCES: Record<string, Source> = {
   judge: { file: "WhatsApp Image 2026-11-21 at 13.47.47.jpeg", crop: { left: 300, top: 800, width: 2400, height: 3200 } },
   peek: { file: "WhatsApp Image 2026-11-21 at 13.47.47 (1).jpeg", crop: { left: 1000, top: 1200, width: 1800, height: 2400 } },
@@ -32,6 +32,7 @@ const SOURCES: Record<string, Source> = {
   swipe: { file: "WhatsApp Image 2026-11-21 at 21.35.03 (2).jpeg" },
   boss: { file: "WhatsApp Image 2026-11-21 at 21.35.03.jpeg" },
   leader: { file: "WhatsApp Image 2026-11-21 at 13.47.47.jpeg", crop: { left: 1050, top: 1650, width: 1200, height: 1100 } },
+  night: { file: "WhatsApp Image 2026-11-21 at 21.34.07 (1).jpeg", crop: { left: 0, top: 1000, width: 2550, height: 3000 } },
 };
 
 const outDir = join(ROOT, "public", "luna");

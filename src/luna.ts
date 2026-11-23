@@ -8,6 +8,11 @@ export interface LunaPhoto {
 
 export const SCALE = 3;
 
+export const NIGHT: LunaPhoto = { name: "night", caption: "Luna, in the monitor glow. Late, again.", width: 150, height: 176, reserved: true };
+
+// Made from night.png outside the repo, so it is not in LUNA_PHOTOS and scripts/dither.ts skips it.
+export const NIGHT_POV: LunaPhoto = { ...NIGHT, name: "night_luna_pov", caption: "The same night, through Luna's eyes." };
+
 // scripts/dither.ts reads these sizes. A reserved photo belongs to one command and stays out of `luna`.
 export const LUNA_PHOTOS: LunaPhoto[] = [
   { name: "judge", caption: "Luna, under the plant, judging you.", width: 150, height: 200 },
@@ -27,6 +32,7 @@ export const LUNA_PHOTOS: LunaPhoto[] = [
   { name: "swipe", caption: "Luna, at full speed.", width: 150, height: 200, reserved: true },
   { name: "boss", caption: "Luna, waiting for you at the end.", width: 150, height: 200, reserved: true },
   { name: "leader", caption: "Luna, as an Arcs leader. She is not impressed.", width: 120, height: 110, reserved: true },
+  NIGHT,
 ];
 
 export const POSES = LUNA_PHOTOS.filter((p) => !p.reserved);
