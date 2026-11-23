@@ -1,7 +1,7 @@
 import type { FsNode } from "../../fs/fs.ts";
 import type { Session, TerminalApi } from "../../term/types.ts";
-import { unsealFlag } from "./data.ts";
-import { ADDRESS_KIBBLE, ADDRESS_SARDINE, ADDRESS_SERVE_LOOP, formatAddress } from "./symbols.ts";
+import { dispenseAt } from "./data.ts";
+import { ADDRESS_KIBBLE, ADDRESS_SERVE_LOOP, formatAddress } from "./symbols.ts";
 
 const NAME_BYTES = 32;
 
@@ -124,9 +124,10 @@ export class Daemon implements Session {
 
   private async dispense(term: TerminalApi): Promise<void> {
     const pointer = new DataView(this.pointerBytes.buffer).getUint32(0, true);
-    if (pointer === ADDRESS_SARDINE) {
+    const sardine = await dispenseAt(pointer);
+    if (sardine) {
       term.print("Dispensing: sardine.", "amber");
-      term.print(await unsealFlag(), "amber");
+      term.print(sardine, "amber");
       return;
     }
     if (pointer === ADDRESS_KIBBLE) {
