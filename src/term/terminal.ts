@@ -170,8 +170,10 @@ export class Terminal implements TerminalApi {
     return this.currentHistory.list();
   }
 
-  focus(): void {
-    this.el.input.focus();
+  /** Focuses the input but shows the top of the output, so the first screen starts at its photo. */
+  focusAtTop(): void {
+    this.el.input.focus({ preventScroll: true });
+    this.el.screen.scrollTop = 0;
   }
 
   private get session(): Session {

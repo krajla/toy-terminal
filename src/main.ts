@@ -30,4 +30,4 @@ const term = new Terminal(
 const pose = POSES[Math.floor(Math.random() * POSES.length)];
 if (pose) term.printNode(photo(pose));
 intro(term);
-term.focus();
+term.focusAtTop();
