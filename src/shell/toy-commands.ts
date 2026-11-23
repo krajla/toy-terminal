@@ -67,6 +67,7 @@ export const roll: Command = {
 const unmask = hidden({
   name: "unmask",
   summary: "take off the mask",
+  secret: true,
   run(_args, term, shell) {
     if (!shell.mark.has) return term.print('"I wear no mask."', "dim");
     shell.mark.set(false);

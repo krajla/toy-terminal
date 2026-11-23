@@ -16,9 +16,18 @@ export const help: Command = {
   run(_args, term, shell) {
     const width = Math.max(...shell.visible().map((c) => c.name.length));
     for (const c of shell.visible()) term.print(`  ${c.name.padEnd(width)}  ${c.summary}`);
+    const findable = shell.findable();
+    const found = findable.filter((c) => shell.found.has(c.name));
+    if (found.length) {
+      term.print();
+      term.print("Found so far:", "dim");
+      for (const c of found) term.print(`  ${c.name.padEnd(width)}  ${c.summary}`, "dim");
+    }
     term.print();
     term.print("There is a welcome.txt here. Luna did not eat it. Yet.", "dim");
-    term.print("Some commands are not on this list. Luna does not tell you everything.", "dim");
+    const left = findable.length - found.length;
+    if (left) term.print(`Luna keeps ${left} more command${left === 1 ? "" : "s"} to herself. Some she shows for sardines.`, "dim");
+    else term.print("You found every trick that Luna shows. She still keeps a few to herself.", "dim");
   },
 };
 

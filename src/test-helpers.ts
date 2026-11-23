@@ -1,6 +1,7 @@
 import { Progress } from "./ctf/progress.ts";
 import { YellowMark } from "./fun/yellow-mark.ts";
 import type { FsNode } from "./fs/fs.ts";
+import { Discoveries } from "./shell/discoveries.ts";
 import { Shell, type Command } from "./shell/shell.ts";
 import type { Session, TerminalApi } from "./term/types.ts";
 
@@ -21,7 +22,7 @@ export function memoryStore() {
 }
 
 export function makeShell(commands: Command[], root: FsNode = { kind: "dir", children: {} }) {
-  return new Shell(commands, root, new Progress(memoryStore()), new YellowMark(memoryStore()));
+  return new Shell(commands, root, new Progress(memoryStore()), new YellowMark(memoryStore()), new Discoveries(memoryStore()));
 }
 
 export function fakeTerm() {

@@ -7,6 +7,7 @@ export const sqlite: Command = {
   name: "sqlite",
   summary: "open a database",
   hidden: true,
+  secret: true,
   async run(args, term, shell) {
     const file = args[0];
     if (!file) return term.print("usage: sqlite FILE. There is a database in this home directory.", "dim");

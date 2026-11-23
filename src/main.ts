@@ -3,6 +3,7 @@ import { ROOT } from "./fs/tree.ts";
 import { YellowMark } from "./fun/yellow-mark.ts";
 import { photo, POSES } from "./luna.ts";
 import { ALL_COMMANDS } from "./shell/commands.ts";
+import { Discoveries } from "./shell/discoveries.ts";
 import { intro } from "./shell/intro.ts";
 import { Shell } from "./shell/shell.ts";
 import { Terminal } from "./term/terminal.ts";
@@ -24,7 +25,7 @@ const term = new Terminal(
     prompt: byId("prompt"),
     input,
   },
-  new Shell(ALL_COMMANDS, ROOT, new Progress(), new YellowMark()),
+  new Shell(ALL_COMMANDS, ROOT, new Progress(), new YellowMark(), new Discoveries()),
 );
 
 const pose = POSES[Math.floor(Math.random() * POSES.length)];

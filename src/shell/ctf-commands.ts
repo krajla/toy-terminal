@@ -1,6 +1,7 @@
 import { proofOf, sardineForProof, SARDINES, TIERS, type Tier } from "../ctf/sardines.ts";
 import { playFinale } from "../fun/finale-scene.ts";
-import type { Part } from "../term/types.ts";
+import { randomItem } from "../fun/random.ts";
+import type { Part, TerminalApi } from "../term/types.ts";
 import type { Command, Shell } from "./shell.ts";
 
 const BAR_WIDTH = 20;
@@ -8,6 +9,18 @@ const TIER_CLASS: Record<Tier, string> = { easy: "ok", medium: "amber", hard: "e
 
 function countFound(shell: Shell): number {
   return SARDINES.filter((s) => shell.progress.has(s.id)).length;
+}
+
+// Each new sardine shows the player one hidden command that they have not found yet.
+function revealTrick(term: TerminalApi, shell: Shell): void {
+  const trick = randomItem(shell.findable().filter((c) => !shell.found.has(c.name)));
+  if (!trick) return;
+  shell.found.add(trick.name);
+  term.printParts([
+    { text: "Luna is pleased. She shows you a trick: ", cls: "dim" },
+    { text: trick.name, cls: "amber" },
+    { text: ` (${trick.summary})`, cls: "dim" },
+  ]);
 }
 
 export const submit: Command = {
@@ -23,6 +36,7 @@ export const submit: Command = {
     shell.progress.add(sardine.id, proof);
     const found = countFound(shell);
     term.print(`Om nom. +1 sardine: ${sardine.name}. (${found}/${SARDINES.length})`, "amber");
+    revealTrick(term, shell);
     if (found < SARDINES.length) return;
     term.print("That was the last one. Luna is full. For now.", "amber");
     await playFinale(term, shell.progress);
@@ -34,6 +48,7 @@ export const finale: Command = {
   name: "finale",
   summary: "the end",
   hidden: true,
+  secret: true,
   async run(_args, term, shell) {
     const left = SARDINES.length - countFound(shell);
     if (left) return term.print(`Luna is not full yet. ${left} sardine${left === 1 ? "" : "s"} to go.`, "dim");

@@ -28,12 +28,13 @@ test("reports an unknown command and a parse error", async () => {
   ]);
 });
 
-test("runs hidden commands but does not complete them", async () => {
+test("completes a hidden command only after the player has found it", async () => {
   const { term, lines } = fakeTerm();
   const shell = makeShell([echo, secret]);
+  expect(shell.complete("se")).toEqual({ line: "se", options: [] });
   await shell.run("secret", term);
   expect(lines.map((l) => l.text)).toEqual(["found"]);
-  expect(shell.complete("se")).toEqual({ line: "se", options: [] });
+  expect(shell.complete("se")).toEqual({ line: "secret ", options: ["secret"] });
 });
 
 test("completes command names and arguments", () => {

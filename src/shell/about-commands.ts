@@ -102,6 +102,7 @@ export const git: Command = {
   name: "git",
   summary: "version control",
   hidden: true,
+  secret: true,
   run(_args, term) {
     term.print("fatal: not a git repository (or any of the parent directories): .git", "err");
     term.print("This machine has no history. Robert keeps his somewhere more public.", "dim");

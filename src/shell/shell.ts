@@ -1,6 +1,7 @@
 import type { Progress } from "../ctf/progress.ts";
 import { CASSILDA } from "../fun/king-in-yellow.ts";
 import type { YellowMark } from "../fun/yellow-mark.ts";
+import type { Discoveries } from "./discoveries.ts";
 import { displayPath, HOME, type FsNode } from "../fs/fs.ts";
 import { completeWord } from "../term/complete.ts";
 import { ParseError, tokenize } from "../term/parse.ts";
@@ -10,6 +11,8 @@ export interface Command {
   name: string;
   summary: string;
   hidden?: boolean;
+  /** Never listed or revealed: a tool of a level, an easter egg, or a joke that only works when found. */
+  secret?: boolean;
   run(args: string[], term: TerminalApi, shell: Shell): void | Promise<void>;
   complete?(args: string[], shell: Shell): string[];
 }
@@ -25,6 +28,7 @@ export class Shell implements Session {
     readonly root: FsNode,
     readonly progress: Progress,
     readonly mark: YellowMark,
+    readonly found: Discoveries,
   ) {
     for (const c of commands) this.commands.set(c.name, c);
   }
@@ -47,6 +51,11 @@ export class Shell implements Session {
 
   visible(): Command[] {
     return [...this.commands.values()].filter((c) => !c.hidden).toSorted((a, b) => a.name.localeCompare(b.name));
+  }
+
+  /** Hidden commands that the player can find and that a sardine can reveal, by name. */
+  findable(): Command[] {
+    return [...this.commands.values()].filter((c) => c.hidden && !c.secret).toSorted((a, b) => a.name.localeCompare(b.name));
   }
 
   // The marked sing Cassilda's Song: the first input line after a reload, then every eighth one, types the
@@ -77,6 +86,7 @@ export class Shell implements Session {
     if (!command) return term.print(`luna-sh: command not found: ${name}`, "err");
     const wasMarked = this.mark.has;
     await command.run(args, term, this);
+    if (command.hidden && !command.secret) this.found.add(command.name);
     // The song takes over the very next line after the player is marked.
     if (!wasMarked && this.mark.has) {
       this.commandsRun = 0;
@@ -91,7 +101,7 @@ export class Shell implements Session {
     const [name, ...args] = words.filter(Boolean);
     const candidates =
       name === undefined
-        ? this.visible().map((c) => c.name)
+        ? [...this.visible(), ...this.findable().filter((c) => this.found.has(c.name))].map((c) => c.name)
         : (this.commands.get(name)?.complete?.([...args, word], this) ?? []);
     const result = completeWord(word, candidates);
     return { line: head + result.word, options: result.matches };

@@ -30,6 +30,7 @@ export const RIVAL_COMMANDS: Command[] = Object.entries(RIVALS).map(([name, snar
   name,
   summary: "another agent",
   hidden: true,
+  secret: true,
   run(_args, term) {
     term.print(snark);
     term.printParts([{ text: "Try ", cls: "dim" }, { text: "lunagpt", cls: "amber" }, { text: " instead.", cls: "dim" }]);

@@ -5,6 +5,7 @@ export const crontabCommand: Command = {
   name: "crontab",
   summary: "show scheduled jobs",
   hidden: true,
+  secret: true,
   run(args, term) {
     const flag = args[0];
     if (flag === "-l") return term.print(crontab.trimEnd());

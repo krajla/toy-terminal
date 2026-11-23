@@ -5,6 +5,7 @@ const resolver = (name: string): Command => ({
   name,
   summary: "query DNS",
   hidden: true,
+  secret: true,
   run(args, term) {
     term.print(`;; ${name} ${args.join(" ")}`.trimEnd(), "dim");
     term.print(";; communications error: this terminal has no network. Luna unplugged it.", "err");
