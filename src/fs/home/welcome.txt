@@ -1,9 +1,7 @@
-Welcome to luna.krajla.space.
+Welcome to the hunt.
 
-I am Robert. This is my terminal. The grey one on the boot screen is Luna,
-and she runs the place.
-
-Luna hides sardines in this machine. Each one looks like sardine{...}.
+Luna hides sardines in this machine, and in a few places outside it.
+Each one looks like sardine{...}.
 When you find one, type:   submit <sardine>
 To count what you have:    sardines
 
