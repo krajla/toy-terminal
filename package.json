@@ -7,10 +7,13 @@
     "build": "bun run scripts/build.ts",
     "dither": "bun run scripts/dither.ts",
     "typecheck": "tsc --noEmit",
-    "icons": "bun run scripts/icons.ts"
+    "icons": "bun run scripts/icons.ts",
+    "lint": "oxlint --type-aware --deny-warnings"
   },
   "devDependencies": {
     "@types/bun": "^1.4.5",
+    "oxlint": "1.85.0",
+    "oxlint-tsgolint": "^7.0.2008",
     "sharp": "^0.35.5",
     "typescript": "^7.0.2"
   },

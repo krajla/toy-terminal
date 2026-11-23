@@ -1,0 +1,54 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
+  },
+  "env": {
+    "browser": true,
+    "es2024": true
+  },
+  // Git ignores tmp/, solvers/ and images/ through .gitignore and .git/info/exclude, but oxlint reads
+  // .gitignore alone, thus each one is named here.
+  "ignorePatterns": ["dist/**", "tmp/**", "solvers/**", "images/**", "node_modules/**"],
+  "rules": {
+    // A name that starts with "_" is unused on purpose: an argument that a signature requires, or a slot
+    // of a destructured array.
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_"
+      }
+    ],
+    "eqeqeq": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "typescript/no-explicit-any": "error",
+    // An escape hatch must carry the reason that makes it safe, so the code uses `as` with a comment
+    // and never the bare non-null assertion.
+    "typescript/no-non-null-assertion": "error",
+    "typescript/consistent-type-imports": "error",
+    // These rules read type information, through `oxlint --type-aware`.
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/await-thenable": "error",
+    "typescript/switch-exhaustiveness-check": ["error", { "considerDefaultExhaustiveForUnions": true }],
+    "typescript/no-unnecessary-type-assertion": "error",
+    // Animations and step-by-step tests wait for one frame or one command after the other on purpose.
+    "no-await-in-loop": "off",
+    // The scenes and icons split a line with [...line] to get whole code points, so the glyphs "·•●" stay whole.
+    "typescript/no-misused-spread": "off"
+  },
+  "overrides": [
+    {
+      // The build scripts and the tests run in Bun, and a script reports its work on the console.
+      "files": ["scripts/**", "**/*.test.ts"],
+      "env": { "browser": false, "node": true }
+    }
+  ]
+}
