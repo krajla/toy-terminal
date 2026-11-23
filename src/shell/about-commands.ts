@@ -77,7 +77,7 @@ SYNOPSIS
 
 DESCRIPTION
        Folded ears, round face, big amber eyes, chunky. Very judgy.
-       Sits in every box the moment it opens, board-game boxes first.
+       Sleeps on whatever is warm: laptops, pillows, freshly folded laundry.
        Lies on her back. Slides on her back. Plays with a sardine toy.
 
 FEEDING

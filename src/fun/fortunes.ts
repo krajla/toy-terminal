@@ -1,5 +1,5 @@
 export const FORTUNES = [
-  "A box will open today. You will not be the one who sits in it.",
+  "Something on your desk is close to the edge. Luna has noticed.",
   "The food bowl is half full. Luna says it is empty.",
   "Every table has an edge. Every object on it has a destiny.",
   "You will find a sardine where you least expect it. Check the dotfiles.",
